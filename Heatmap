@@ -1,0 +1,758 @@
+CREATE OR ALTER PROCEDURE [dbo].[sp_HeatMap_TeamActivity]
+(
+    @FromDate DATE,
+    @ToDate DATE,
+    @ManagerEmployeeCode VARCHAR(50) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    ---------------------------------------------------------
+    -- VALIDATION
+    ---------------------------------------------------------
+    IF @FromDate IS NULL OR @ToDate IS NULL
+    BEGIN
+        THROW 50001, 'FromDate and ToDate are required.', 1;
+    END;
+
+    IF @FromDate > @ToDate
+    BEGIN
+        THROW 50002, 'FromDate cannot be greater than @ToDate.', 1;
+    END;
+
+
+    ---------------------------------------------------------
+    -- CLEANUP TEMP TABLES
+    ---------------------------------------------------------
+    IF OBJECT_ID('tempdb..#Numbers') IS NOT NULL
+        DROP TABLE #Numbers;
+
+    IF OBJECT_ID('tempdb..#TeamLeads') IS NOT NULL
+        DROP TABLE #TeamLeads;
+
+    IF OBJECT_ID('tempdb..#TeamMembers') IS NOT NULL
+        DROP TABLE #TeamMembers;
+
+    IF OBJECT_ID('tempdb..#SummaryTeamMembers') IS NOT NULL
+        DROP TABLE #SummaryTeamMembers;
+
+    IF OBJECT_ID('tempdb..#ActivityData') IS NOT NULL
+        DROP TABLE #ActivityData;
+
+
+    ---------------------------------------------------------
+    -- HOURS 0 - 23
+    ---------------------------------------------------------
+    CREATE TABLE #Numbers
+    (
+        Number INT NOT NULL PRIMARY KEY
+    );
+
+    INSERT INTO #Numbers (Number)
+    VALUES
+        (0),(1),(2),(3),(4),(5),
+        (6),(7),(8),(9),(10),(11),
+        (12),(13),(14),(15),(16),(17),
+        (18),(19),(20),(21),(22),(23);
+
+
+    ---------------------------------------------------------
+    -- STEP 1: GET TEAM LEADS UNDER MANAGER
+    ---------------------------------------------------------
+    SELECT DISTINCT
+        CAST(EmployeeCode AS VARCHAR(50)) AS EmployeeCode,
+        FullName
+    INTO #TeamLeads
+    FROM vw_MasterEmployee
+    WHERE
+        LTRIM(RTRIM(MANAGER_1)) =
+        LTRIM(RTRIM(@ManagerEmployeeCode));
+
+
+    ---------------------------------------------------------
+    -- STEP 2: GET TEAM MEMBERS
+    --
+    -- Employee is considered under TL if TL appears
+    -- in any manager level.
+    --
+    -- TL himself is also included.
+    ---------------------------------------------------------
+    SELECT DISTINCT
+        CAST(E.EmployeeCode AS VARCHAR(50)) AS EmployeeCode,
+        CAST(TL.EmployeeCode AS VARCHAR(50)) AS TeamLeadCode,
+        TL.FullName AS TeamLeadName
+    INTO #TeamMembers
+    FROM vw_MasterEmployee E
+    INNER JOIN #TeamLeads TL
+        ON
+            CAST(TL.EmployeeCode AS VARCHAR(50)) =
+                CAST(E.MANAGER_1 AS VARCHAR(50))
+            OR
+            CAST(TL.EmployeeCode AS VARCHAR(50)) =
+                CAST(E.MANAGER_2 AS VARCHAR(50))
+            OR
+            CAST(TL.EmployeeCode AS VARCHAR(50)) =
+                CAST(E.MANAGER_3 AS VARCHAR(50))
+            OR
+            CAST(TL.EmployeeCode AS VARCHAR(50)) =
+                CAST(E.MANAGER_4 AS VARCHAR(50))
+            OR
+            CAST(TL.EmployeeCode AS VARCHAR(50)) =
+                CAST(E.MANAGER_5 AS VARCHAR(50))
+            OR
+            CAST(TL.EmployeeCode AS VARCHAR(50)) =
+                CAST(E.MANAGER_6 AS VARCHAR(50))
+            OR
+            CAST(TL.EmployeeCode AS VARCHAR(50)) =
+                CAST(E.MANAGER_7 AS VARCHAR(50))
+
+    UNION
+
+    ---------------------------------------------------------
+    -- TL HIMSELF
+    ---------------------------------------------------------
+    SELECT
+        CAST(EmployeeCode AS VARCHAR(50)) AS EmployeeCode,
+        CAST(EmployeeCode AS VARCHAR(50)) AS TeamLeadCode,
+        FullName AS TeamLeadName
+    FROM #TeamLeads;
+
+
+    ---------------------------------------------------------
+    -- STEP 3:
+    -- ONLY KEEP EMPLOYEES WHO HAVE A SUMMARY RECORD
+    -- IN THE SELECTED DATE RANGE.
+    --
+    -- This also means:
+    -- HC = number of employees having summary records.
+    ---------------------------------------------------------
+    SELECT DISTINCT
+        TM.EmployeeCode,
+        TM.TeamLeadCode,
+        TM.TeamLeadName
+    INTO #SummaryTeamMembers
+    FROM #TeamMembers TM
+    INNER JOIN dbo.EmployeeActivityLogSummary S
+        ON CAST(S.EmployeeCode AS VARCHAR(50))
+            = TM.EmployeeCode
+    WHERE
+        S.LoggedDate >= @FromDate
+        AND S.LoggedDate <= @ToDate;
+
+
+    ---------------------------------------------------------
+    -- STEP 4:
+    -- REMOVE TLs WHO HAVE NO SUMMARY RECORD
+    -- FOR THEMSELVES OR THEIR EMPLOYEES.
+    ---------------------------------------------------------
+    DELETE TL
+    FROM #TeamLeads TL
+    WHERE NOT EXISTS
+    (
+        SELECT 1
+        FROM #SummaryTeamMembers STM
+        WHERE
+            STM.TeamLeadCode =
+                CAST(TL.EmployeeCode AS VARCHAR(50))
+    );
+
+
+    ---------------------------------------------------------
+    -- REMOVE MEMBERS WHO BELONG TO TLs THAT NO LONGER QUALIFY
+    ---------------------------------------------------------
+    DELETE STM
+    FROM #SummaryTeamMembers STM
+    WHERE NOT EXISTS
+    (
+        SELECT 1
+        FROM #TeamLeads TL
+        WHERE
+            CAST(TL.EmployeeCode AS VARCHAR(50))
+                = STM.TeamLeadCode
+    );
+
+
+    ---------------------------------------------------------
+    -- INDEXES
+    ---------------------------------------------------------
+    CREATE CLUSTERED INDEX IX_SummaryTeamMembers_Employee
+        ON #SummaryTeamMembers(EmployeeCode);
+
+    CREATE NONCLUSTERED INDEX IX_SummaryTeamMembers_TeamLead
+        ON #SummaryTeamMembers(TeamLeadCode);
+
+
+    ---------------------------------------------------------
+    -- STEP 5:
+    -- GET ACTIVITY DATA
+    --
+    -- IMPORTANT:
+    -- EmployeeCode is explicitly CAST to VARCHAR(50).
+    --
+    -- This avoids:
+    -- "Column 'EmployeeCode' ... invalid for use as
+    -- a key column in an index."
+    ---------------------------------------------------------
+    SELECT
+        CAST(A.EmployeeCode AS VARCHAR(50)) AS EmployeeCode,
+
+        DATEADD(MINUTE, 330, A.StartTime) AS StartTime,
+
+        DATEADD(MINUTE, 330, A.EndTime) AS EndTime
+
+    INTO #ActivityData
+
+    FROM dbo.MasterActivityLog A
+
+    INNER JOIN #SummaryTeamMembers STM
+        ON STM.EmployeeCode =
+            CAST(A.EmployeeCode AS VARCHAR(50))
+
+    WHERE
+        A.IsActive = 1
+        AND A.IsDelete = 0
+
+        -- Ignore idle activities
+        AND A.Status <> 'Idle'
+
+        AND A.StartTime IS NOT NULL
+        AND A.EndTime IS NOT NULL
+
+        AND A.EndTime > A.StartTime
+
+        -----------------------------------------------------
+        -- Extra day on both sides because of UTC -> IST
+        -- conversion and activities crossing midnight.
+        -----------------------------------------------------
+        AND A.LogDate >= DATEADD(DAY, -1, @FromDate)
+        AND A.LogDate <= DATEADD(DAY, 1, @ToDate);
+
+
+    ---------------------------------------------------------
+    -- IMPORTANT:
+    -- EmployeeCode is VARCHAR(50), therefore safe as index key.
+    ---------------------------------------------------------
+    CREATE CLUSTERED INDEX IX_ActivityData_Employee_Start
+        ON #ActivityData(EmployeeCode, StartTime);
+
+
+    ---------------------------------------------------------
+    -- STEP 6:
+    -- SPLIT ACTIVITY INTO HOURLY SEGMENTS
+    ---------------------------------------------------------
+    ;WITH ActivityExpanded AS
+    (
+        SELECT
+            STM.TeamLeadCode,
+            STM.TeamLeadName,
+
+            A.EmployeeCode,
+
+            CAST(HR.HourStart AS DATE) AS ActivityDate,
+
+            DATEPART(HOUR, HR.HourStart) AS ActivityHour,
+
+            DATEDIFF
+            (
+                SECOND,
+
+                CASE
+                    WHEN A.StartTime > HR.HourStart
+                        THEN A.StartTime
+                    ELSE HR.HourStart
+                END,
+
+                CASE
+                    WHEN A.EndTime <
+                         DATEADD(HOUR, 1, HR.HourStart)
+                        THEN A.EndTime
+                    ELSE DATEADD(HOUR, 1, HR.HourStart)
+                END
+            ) AS ActiveSeconds
+
+        FROM #ActivityData A
+
+        INNER JOIN #SummaryTeamMembers STM
+            ON STM.EmployeeCode = A.EmployeeCode
+
+        CROSS APPLY
+        (
+            SELECT
+                DATEADD
+                (
+                    HOUR,
+                    N.Number,
+
+                    DATEADD
+                    (
+                        HOUR,
+                        DATEDIFF(HOUR, 0, A.StartTime),
+                        0
+                    )
+                ) AS HourStart
+
+            FROM #Numbers N
+
+            WHERE
+                N.Number <=
+                DATEDIFF
+                (
+                    HOUR,
+                    A.StartTime,
+                    A.EndTime
+                )
+        ) HR
+
+        -----------------------------------------------------
+        -- Only selected date range
+        -----------------------------------------------------
+        WHERE
+            HR.HourStart >=
+                CAST(@FromDate AS DATETIME2)
+
+            AND HR.HourStart <
+                DATEADD
+                (
+                    DAY,
+                    1,
+                    CAST(@ToDate AS DATETIME2)
+                )
+    ),
+
+
+    ---------------------------------------------------------
+    -- STEP 7:
+    -- DAILY EMPLOYEE + HOUR
+    --
+    -- For every employee and every day:
+    --
+    -- Maximum possible contribution to one hour = 60 min
+    --
+    -- Example:
+    -- Employee worked 75 minutes in 10 AM hour
+    -- => 60 minutes
+    ---------------------------------------------------------
+    EmployeeDailyHourly AS
+    (
+        SELECT
+
+            TeamLeadCode,
+            TeamLeadName,
+
+            EmployeeCode,
+
+            ActivityDate,
+
+            ActivityHour,
+
+            CASE
+                WHEN SUM(ActiveSeconds) / 60.0 > 60.0
+                    THEN 60.0
+
+                ELSE
+                    SUM(ActiveSeconds) / 60.0
+            END AS ActiveMinutes
+
+        FROM ActivityExpanded
+
+        WHERE
+            ActiveSeconds > 0
+
+        GROUP BY
+            TeamLeadCode,
+            TeamLeadName,
+            EmployeeCode,
+            ActivityDate,
+            ActivityHour
+    ),
+
+
+    ---------------------------------------------------------
+    -- STEP 8:
+    -- TOTAL FOR EACH EMPLOYEE + HOUR FOR THE SELECTED PERIOD
+    --
+    -- Example for 30 days:
+    --
+    -- Employee 1:
+    -- Day 1  = 60
+    -- Day 2  = 40
+    -- ...
+    -- Monthly total = 50 (example)
+    --
+    -- This is where the employee's period total is created.
+    ---------------------------------------------------------
+    TeamLeadEmployeeHourly AS
+    (
+        SELECT
+
+            TeamLeadCode,
+            TeamLeadName,
+
+            EmployeeCode,
+
+            ActivityHour,
+
+            SUM(ActiveMinutes) AS TotalActiveMinutes
+
+        FROM EmployeeDailyHourly
+
+        GROUP BY
+            TeamLeadCode,
+            TeamLeadName,
+            EmployeeCode,
+            ActivityHour
+    ),
+
+
+    ---------------------------------------------------------
+    -- STEP 9:
+    -- TOTAL ALL EMPLOYEES FOR EACH TL + HOUR
+    ---------------------------------------------------------
+    TeamLeadHourlyTotal AS
+    (
+        SELECT
+
+            STM.TeamLeadCode,
+
+            STM.TeamLeadName,
+
+            N.Number AS ActivityHour,
+
+            COALESCE
+            (
+                SUM(TEH.TotalActiveMinutes),
+                0.0
+            ) AS TotalActiveMinutes
+
+        FROM #SummaryTeamMembers STM
+
+        CROSS JOIN #Numbers N
+
+        LEFT JOIN TeamLeadEmployeeHourly TEH
+            ON
+                TEH.TeamLeadCode =
+                    STM.TeamLeadCode
+
+                AND TEH.EmployeeCode =
+                    STM.EmployeeCode
+
+                AND TEH.ActivityHour =
+                    N.Number
+
+        GROUP BY
+
+            STM.TeamLeadCode,
+            STM.TeamLeadName,
+            N.Number
+    ),
+
+
+    ---------------------------------------------------------
+    -- STEP 10:
+    -- HC = NUMBER OF UNIQUE EMPLOYEES WITH SUMMARY RECORD
+    ---------------------------------------------------------
+    TeamLeadHC AS
+    (
+        SELECT
+
+            TeamLeadCode,
+
+            COUNT(DISTINCT EmployeeCode) AS HC
+
+        FROM #SummaryTeamMembers
+
+        GROUP BY
+            TeamLeadCode
+    ),
+
+
+    ---------------------------------------------------------
+    -- STEP 11:
+    -- AVERAGE EMPLOYEE VALUE
+    --
+    -- IMPORTANT:
+    --
+    -- We DO NOT divide by number of days here.
+    --
+    -- Formula:
+    --
+    -- Total employee minutes
+    -- -----------------------
+    --          HC
+    --
+    -- Example:
+    --
+    -- Employee 1 = 50
+    -- Employee 2 = 30
+    -- Employee 3 = 20
+    --
+    -- Total = 100
+    -- HC = 3
+    --
+    -- Average = 33.333333
+    ---------------------------------------------------------
+    TeamLeadHourlyAverage AS
+    (
+        SELECT
+
+            T.TeamLeadCode,
+
+            T.TeamLeadName,
+
+            T.ActivityHour,
+
+            HC.HC,
+
+            -------------------------------------------------
+            -- Average across employees
+            -------------------------------------------------
+            CAST
+            (
+                CASE
+                    WHEN
+                        T.TotalActiveMinutes /
+                        NULLIF(HC.HC, 0) > 60.0
+                    THEN 60.0
+
+                    ELSE
+                        T.TotalActiveMinutes /
+                        NULLIF(HC.HC, 0)
+                END
+                AS DECIMAL(18,6)
+            ) AS AvgMinutes
+
+        FROM TeamLeadHourlyTotal T
+
+        INNER JOIN TeamLeadHC HC
+            ON HC.TeamLeadCode =
+                T.TeamLeadCode
+    )
+
+
+    ---------------------------------------------------------
+    -- STEP 12:
+    -- FINAL HEATMAP
+    ---------------------------------------------------------
+    SELECT
+
+        TeamLeadCode,
+
+        TeamLeadName,
+
+        HC,
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 0
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [00],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 1
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [01],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 2
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [02],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 3
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [03],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 4
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [04],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 5
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [05],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 6
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [06],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 7
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [07],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 8
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [08],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 9
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [09],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 10
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [10],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 11
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [11],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 12
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [12],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 13
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [13],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 14
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [14],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 15
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [15],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 16
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [16],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 17
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [17],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 18
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [18],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 19
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [19],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 20
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [20],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 21
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [21],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 22
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [22],
+
+        MAX
+        (
+            CASE
+                WHEN ActivityHour = 23
+                    THEN NULLIF(AvgMinutes, 0)
+            END
+        ) AS [23]
+
+    FROM TeamLeadHourlyAverage
+
+    GROUP BY
+        TeamLeadCode,
+        TeamLeadName,
+        HC
+
+    ORDER BY
+        TeamLeadName;
+
+
+    ---------------------------------------------------------
+    -- CLEANUP
+    ---------------------------------------------------------
+    DROP TABLE #ActivityData;
+    DROP TABLE #SummaryTeamMembers;
+    DROP TABLE #TeamMembers;
+    DROP TABLE #TeamLeads;
+    DROP TABLE #Numbers;
+
+END;
+GO
