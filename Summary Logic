@@ -1,0 +1,582 @@
+        /// <summary>
+        /// Record entry to summary table
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateProductivitySummaryAsync()
+        {
+            try
+            {
+                var today = DateOnly.FromDateTime(DateTime.Today);
+                var yesterday = today.AddDays(-1);
+
+                /*
+                 * We process today + yesterday because an overnight shift can
+                 * continue after 12:00 AM and those activities belong to the
+                 * previous business day.
+                 *
+                 * Example:
+                 *
+                 * 18-Aug 20:30 → 19-Aug 05:30
+                 *
+                 * 19-Aug 01:00 activity belongs to 18-Aug summary.
+                 */
+
+                var activities = await _dbContext.MasterActivityLog
+                    .Where(x =>
+                        x.LogDate == today ||
+                        x.LogDate == yesterday)
+                    .ToListAsync();
+
+                if (!activities.Any())
+                    return;
+
+                /*
+                 * Convert activity time to IST and determine the
+                 * Business/LoggedDate.
+                 *
+                 * Anything between 12:00 AM and 05:30 AM belongs
+                 * to the previous business day because it is part
+                 * of an overnight shift.
+                 */
+
+                var activityWithBusinessDate = activities
+                    .Select(x =>
+                    {
+                        var istStartTime =
+                            Formatter.ConvertUtcToIst(x.StartTime);
+
+                        var istEndTime =
+                            Formatter.ConvertUtcToIst(x.EndTime);
+
+                        var activityDate =
+                            DateOnly.FromDateTime(istStartTime);
+
+                        /*
+                         * 00:00 - 05:30 belongs to previous business day.
+                         *
+                         * 05:30 is NOT included here because NWS starts
+                         * at 05:30.
+                         */
+
+                        if (istStartTime.TimeOfDay <
+                            new TimeSpan(5, 30, 0))
+                        {
+                            activityDate = activityDate.AddDays(-1);
+                        }
+
+                        return new
+                        {
+                            Activity = x,
+                            LogDate = activityDate,
+                            IstStartTime = istStartTime,
+                            IstEndTime = istEndTime
+                        };
+                    })
+                    .Where(x =>
+                        x.LogDate == today ||
+                        x.LogDate == yesterday)
+                    .ToList();
+
+                if (!activityWithBusinessDate.Any())
+                    return;
+
+                /*
+                 * Remove duplicate cumulative records.
+                 *
+                 * For the same Employee + BusinessDate + StartTime + Status,
+                 * keep the record having the highest duration.
+                 */
+
+                var dedupedActivities = activityWithBusinessDate
+                    .GroupBy(x => new
+                    {
+                        x.Activity.EmployeeCode,
+                        x.LogDate,
+                        x.Activity.StartTime,
+                        x.Activity.Status
+                    })
+                    .Select(g =>
+                        g.OrderByDescending(x =>
+                                x.Activity.DurationSeconds)
+                         .ThenByDescending(x =>
+                                x.Activity.MasterActivityLogId)
+                         .First())
+                    .ToList();
+
+                /*
+                 * Group by Employee + Business Date.
+                 */
+
+                var employeeDayGroups = dedupedActivities
+                    .GroupBy(x => new
+                    {
+                        x.Activity.EmployeeCode,
+                        x.LogDate
+                    })
+                    .ToList();
+
+                /*
+                 * Get all active MasterShift records.
+                 */
+
+                var masterShifts = await _dbContext.MasterShift
+                    .Where(x => x.IsActive)
+                    .ToListAsync();
+
+                /*
+                 * Get employee codes and business dates so that
+                 * existing summaries can be fetched in one query.
+                 */
+
+                var employeeCodes = employeeDayGroups
+                    .Select(x => x.Key.EmployeeCode)
+                    .Distinct()
+                    .ToList();
+
+                var businessDates = employeeDayGroups
+                    .Select(x => x.Key.LogDate)
+                    .Distinct()
+                    .ToList();
+
+                var existingSummaries =
+                    await _dbContext.EmployeeActivityLogSummary
+                        .Where(x =>
+                            employeeCodes.Contains(x.EmployeeCode) &&
+                            businessDates.Contains(x.LoggedDate))
+                        .ToListAsync();
+
+                /*
+                 * One summary per Employee + LoggedDate.
+                 */
+
+                var existingSummaryDictionary = existingSummaries
+                    .ToDictionary(
+                        x => $"{x.EmployeeCode}_{x.LoggedDate}");
+
+                /*
+                 * Lookup values used when creating a summary.
+                 */
+
+                string[] keys =
+                {
+            WorkVistaConstants.LookupConstants.DayType,
+            WorkVistaConstants.LookupConstants.AttendanceStatus,
+            WorkVistaConstants.LookupConstants.ShiftName,
+            WorkVistaConstants.LookupConstants.NoOfDays
+        };
+
+                var lookups =
+                    (await _dictionaryService.GetByNamesAsync(keys))
+                        .ToDictionary(x => x.Key, x => x.Value);
+
+                /*
+                 * Process each Employee + Business Date.
+                 */
+
+                foreach (var employeeDayGroup in employeeDayGroups)
+                {
+                    var employeeCode =
+                        employeeDayGroup.Key.EmployeeCode;
+
+                    var loggedDate =
+                        employeeDayGroup.Key.LogDate;
+
+                    var employeeActivities =
+                        employeeDayGroup
+                            .ToList();
+
+                    if (!employeeActivities.Any())
+                        continue;
+
+                    /*
+                     * -----------------------------------------------------
+                     * VALID ACTIVITIES
+                     * -----------------------------------------------------
+                     *
+                     * Activities having DurationSeconds <= 0 should not
+                     * participate in FirstLogin / LastLogout calculation.
+                     *
+                     * They can still remain in employeeActivities because
+                     * they contribute 0 seconds to the totals.
+                     */
+
+                    var validActivities = employeeActivities
+                        .Where(x =>
+                            x.Activity.DurationSeconds > 0)
+                        .ToList();
+
+                    if (!validActivities.Any())
+                        continue;
+
+                    /*
+                     * -----------------------------------------------------
+                     * FIRST LOGIN
+                     * -----------------------------------------------------
+                     *
+                     * Use earliest valid activity StartTime.
+                     */
+
+                    var firstLogin =
+                        validActivities.Min(x => x.IstStartTime);
+
+                    /*
+                     * -----------------------------------------------------
+                     * LAST LOGOUT
+                     * -----------------------------------------------------
+                     *
+                     * Ignore DurationSeconds = 0 records.
+                     */
+
+                    var lastLogout =
+                        validActivities.Max(x => x.IstEndTime);
+
+                    /*
+                     * -----------------------------------------------------
+                     * EXISTING SUMMARY
+                     * -----------------------------------------------------
+                     */
+
+                    var existingSummaryKey =
+                        $"{employeeCode}_{loggedDate}";
+
+                    existingSummaryDictionary.TryGetValue(
+                        existingSummaryKey,
+                        out var employeeSummary);
+
+                    /*
+                     * -----------------------------------------------------
+                     * DETERMINE SHIFT
+                     * -----------------------------------------------------
+                     *
+                     * Shift is determined ONLY if:
+                     *
+                     * 1. Summary does not exist
+                     * OR
+                     * 2. Existing summary does not have ShiftId.
+                     *
+                     * Once ShiftId is assigned, it is NEVER overwritten.
+                     */
+
+                    MasterShift? selectedShift = null;
+
+                    if (employeeSummary == null ||
+                        employeeSummary.MasterShiftId == null)
+                    {
+                        selectedShift =
+                            GetShiftForFirstLogin(
+                                firstLogin.TimeOfDay,
+                                masterShifts);
+                    }
+
+                    /*
+                     * -----------------------------------------------------
+                     * CREATE SUMMARY IF IT DOESN'T EXIST
+                     * -----------------------------------------------------
+                     */
+
+                    if (employeeSummary == null)
+                    {
+                        employeeSummary =
+                            new EmployeeActivityLogSummary
+                            {
+                                EmployeeCode = employeeCode,
+                                LoggedDate = loggedDate,
+
+                                DAYTYPE =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.DayType),
+
+                                AttendanceStatus =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.AttendanceStatus),
+
+                                SHIFTNAME =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.ShiftName),
+
+                                NOOFDAYS =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.NoOfDays),
+
+                                CreatedAt = DateTime.UtcNow,
+
+                                IsActive = true,
+                                IsDelete = false,
+                                IsValidated = true
+                            };
+
+                        /*
+                         * Set ShiftId ONLY when creating the summary.
+                         */
+
+                        if (selectedShift != null)
+                        {
+                            employeeSummary.MasterShiftId =
+                                selectedShift.MasterShiftId;
+
+                            employeeSummary.SHIFTNAME =
+                                selectedShift.Name;
+                        }
+
+                        _dbContext.EmployeeActivityLogSummary
+                            .Add(employeeSummary);
+
+                        existingSummaryDictionary.Add(
+                            existingSummaryKey,
+                            employeeSummary);
+                    }
+
+                    /*
+                     * -----------------------------------------------------
+                     * RESET CALCULATED VALUES
+                     * -----------------------------------------------------
+                     *
+                     * Since this runs every 5 minutes, recalculate the
+                     * complete business day from scratch.
+                     */
+
+                    employeeSummary.TOT_LOGGEDHOURS = 0;
+                    employeeSummary.TOT_ACTIVEHOURS = 0;
+                    employeeSummary.TOT_PRODHOURS = 0;
+                    employeeSummary.TOT_NONPRODHOURS = 0;
+                    employeeSummary.TOT_TIMEONSYSTEM = 0;
+                    employeeSummary.TOT_IDLETIME = 0;
+                    employeeSummary.TOT_NOIMPACTHOURS = 0;
+                    employeeSummary.TOT_UNKNOWNAPPLICATION = 0;
+
+                    /*
+                     * -----------------------------------------------------
+                     * FIRST LOGIN / LAST LOGOUT
+                     * -----------------------------------------------------
+                     */
+
+                    employeeSummary.FIRSTLOGIN =
+                        firstLogin;
+
+                    employeeSummary.LASTLOGOUT =
+                        lastLogout;
+
+                    /*
+                     * -----------------------------------------------------
+                     * TOTAL CALCULATIONS
+                     * -----------------------------------------------------
+                     *
+                     * Use employeeActivities here.
+                     *
+                     * DurationSeconds = 0 naturally contributes 0 seconds.
+                     */
+
+                    var loggedSeconds =
+                        employeeActivities.Sum(x =>
+                            (long)x.Activity.DurationSeconds);
+
+                    var activeSeconds =
+                        employeeActivities
+                            .Where(x =>
+                                x.Activity.Status !=
+                                ActivityCategoryTypes.Idle)
+                            .Sum(x =>
+                                (long)x.Activity.DurationSeconds);
+
+                    var productiveSeconds =
+                        employeeActivities
+                            .Where(x =>
+                                x.Activity.Status ==
+                                ActivityCategoryTypes.Productive)
+                            .Sum(x =>
+                                (long)x.Activity.DurationSeconds);
+
+                    var nonProductiveSeconds =
+                        employeeActivities
+                            .Where(x =>
+                                x.Activity.Status ==
+                                ActivityCategoryTypes.NonProductive)
+                            .Sum(x =>
+                                (long)x.Activity.DurationSeconds);
+
+                    var idleSeconds =
+                        employeeActivities
+                            .Where(x =>
+                                x.Activity.Status ==
+                                ActivityCategoryTypes.Idle)
+                            .Sum(x =>
+                                (long)x.Activity.DurationSeconds);
+
+                    var noImpactSeconds =
+                        employeeActivities
+                            .Where(x =>
+                                x.Activity.Status ==
+                                ActivityCategoryTypes.NoImpact)
+                            .Sum(x =>
+                                (long)x.Activity.DurationSeconds);
+
+                    var unknownSeconds =
+                        employeeActivities
+                            .Where(x =>
+                                x.Activity.Status ==
+                                ActivityCategoryTypes.Unknown)
+                            .Sum(x =>
+                                (long)x.Activity.DurationSeconds);
+
+                    /*
+                     * -----------------------------------------------------
+                     * CONVERT SECONDS TO DECIMAL HOURS
+                     * -----------------------------------------------------
+                     */
+
+                    employeeSummary.TOT_LOGGEDHOURS =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            loggedSeconds);
+
+                    employeeSummary.TOT_ACTIVEHOURS =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            activeSeconds);
+
+                    employeeSummary.TOT_PRODHOURS =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            productiveSeconds);
+
+                    employeeSummary.TOT_NONPRODHOURS =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            nonProductiveSeconds);
+
+                    employeeSummary.TOT_TIMEONSYSTEM =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            activeSeconds);
+
+                    employeeSummary.TOT_IDLETIME =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            idleSeconds);
+
+                    employeeSummary.TOT_NOIMPACTHOURS =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            noImpactSeconds);
+
+                    employeeSummary.TOT_UNKNOWNAPPLICATION =
+                        Formatter.ConvertSecondsToDecimalHours(
+                            unknownSeconds);
+
+                    employeeSummary.IsValidated = true;
+
+                    /*
+                     * Update AC columns.
+                     */
+
+                    _employeeActivityLogSummaryService
+                        .UpdateACColumns(employeeSummary);
+                }
+
+                /*
+                 * Save all newly created/updated summaries.
+                 */
+
+                await _dbContext.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private static MasterShift? GetShiftForFirstLogin(TimeSpan firstLoginTime, List<MasterShift> masterShifts)
+        {
+            var nwsStart = new TimeSpan(5, 30, 0);
+            var nwsEnd = new TimeSpan(7, 0, 0);
+
+            /*
+             * -----------------------------------------------------
+             * NWS: 05:30 <= Login < 07:00
+             * -----------------------------------------------------
+             */
+
+            if (firstLoginTime >= nwsStart &&
+                firstLoginTime < nwsEnd)
+            {
+                return masterShifts.FirstOrDefault(x =>
+                    string.Equals(
+                        x.Name,
+                        WorkVistaConstants.ShiftConstants.NWS,
+                        StringComparison.OrdinalIgnoreCase));
+            }
+
+            /*
+             * -----------------------------------------------------
+             * NORMAL SHIFTS
+             * -----------------------------------------------------
+             *
+             * Sort by BeginTime.
+             *
+             * The interval for each shift is:
+             *
+             * Current Shift BeginTime
+             *          <= Login
+             *          < Next Shift BeginTime
+             */
+
+            var normalShifts = masterShifts
+                .Where(x =>
+                    !string.Equals(
+                        x.Name,
+                        WorkVistaConstants.ShiftConstants.NWS,
+                        StringComparison.OrdinalIgnoreCase))
+                .OrderBy(x => x.StartTime)
+                .ToList();
+
+            /*
+             * -----------------------------------------------------
+             * CHECK NORMAL SHIFT INTERVALS
+             * -----------------------------------------------------
+             */
+
+            for (var i = 0; i < normalShifts.Count; i++)
+            {
+                var currentStart =
+                    normalShifts[i]
+                        .StartTime
+                        .ToTimeSpan();
+
+                /*
+                 * For the last shift (Night Shift), the next boundary
+                 * is 05:30 because Night Shift crosses midnight.
+                 */
+
+                var nextStart =
+                    i + 1 < normalShifts.Count
+                        ? normalShifts[i + 1]
+                            .StartTime
+                            .ToTimeSpan()
+                        : nwsStart;
+
+                /*
+                 * Example:
+                 *
+                 * General  : 07:00 <= Login < 10:00
+                 * Morning  : 10:00 <= Login < 12:30
+                 * Afternoon: 12:30 <= Login < 15:30
+                 * Evening  : 15:30 <= Login < 20:30
+                 */
+
+                if (firstLoginTime >= currentStart &&
+                    firstLoginTime < nextStart)
+                {
+                    return normalShifts[i];
+                }
+            }
+
+            /*
+             * -----------------------------------------------------
+             * NIGHT SHIFT
+             * -----------------------------------------------------
+             *
+             * 00:00 - 05:30 belongs to Night Shift.
+             *
+             * The business-date logic has already moved these
+             * activities to the previous business date.
+             */
+
+            return normalShifts.FirstOrDefault(x =>
+                string.Equals(
+                    x.Name,
+                    WorkVistaConstants.ShiftConstants.NightShift,
+                    StringComparison.OrdinalIgnoreCase));
+        }
