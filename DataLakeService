@@ -1,0 +1,906 @@
+using Azure.Storage.Files.DataLake;
+using Azure.Storage.Files.DataLake.Models;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Collections.Concurrent;
+using System.Text;
+using WorkVista.EventHub.Consumer.DTOs;
+using WorkVista.EventHub.Consumer.Extensions;
+using WorkVista.EventHub.Consumer.Interfaces;
+using WorkVista.EventHub.Processor.DTOs;
+
+namespace WorkVista.EventHub.Consumer.Services
+{
+    public sealed class DataLakeService : IDataLakeService
+    {
+        private readonly DataLakeFileSystemClient _fileSystem;
+        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _checkpointLocks = new();
+
+        #region Constructor
+        public DataLakeService(IConfiguration configuration)
+        {
+            // Locally, "WorkVistaStorage" is a real storage-account connection string (emulator).
+            // In Azure, Aspire injects the Data Lake account endpoint as a plain URI under
+            // "datalake" (managed identity auth). NOTE: "raw-events" is intentionally NOT used
+            // here — Aspire emits it as a composite "Endpoint=...;FileSystemName=..." string
+            // that is not a valid Uri nor a real storage connection string, and would break
+            // both branches below.
+            var connectionString =
+                configuration.GetConnectionString("WorkVistaStorage")
+                ?? configuration.GetConnectionString("datalake");
+
+            var fileSystemName =
+                configuration["RawEventsFileSystemName"] ?? "workvista-raw-events";
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "No Data Lake connection string was found. Expected 'ConnectionStrings:WorkVistaStorage' " +
+                    "(local) or 'ConnectionStrings:datalake' (Azure).");
+            }
+
+            // When running against Azure, the value is a plain service endpoint URI (managed
+            // identity auth). Locally (storage emulator) a real connection string is supplied.
+            var serviceClient =
+                Uri.TryCreate(connectionString, UriKind.Absolute, out var serviceUri)
+                    ? new DataLakeServiceClient(serviceUri, new Azure.Identity.DefaultAzureCredential())
+                    : new DataLakeServiceClient(connectionString);
+
+
+            _fileSystem =
+                serviceClient.GetFileSystemClient(
+                    fileSystemName);
+        }
+        #endregion
+
+        #region CONSUMING
+
+        #region Save Event
+        public async Task SaveEventAsync(
+            EventHubConsumerDataPayload payload,
+            string partitionId,
+            long sequenceNumber,
+            string offsetValue,
+            DateTime enqueuedTimeUtc,
+            string rawPayload)
+        {
+            var alreadyProcessed =
+                await IsAlreadyProcessedAsync(
+                    partitionId,
+                    sequenceNumber);
+
+            if (alreadyProcessed)
+            {
+                return;
+            }
+
+            var eventHubRawDataId =
+                GenerateEventHubRawDataId(
+                    partitionId,
+                    sequenceNumber);
+
+            await SaveEventHubRawDataAsync(
+                eventHubRawDataId,
+                partitionId,
+                sequenceNumber,
+                offsetValue,
+                enqueuedTimeUtc,
+                rawPayload);
+
+            await SaveSystemInfoAsync(
+                payload.SystemInfoData,
+                eventHubRawDataId);
+
+            await SaveSoftwareInventoryAsync(
+                payload.SystemInfoData,
+                payload.SoftwareInventoryData,
+                eventHubRawDataId);
+
+            await SaveSessionLogsAsync(
+                payload.SessionEventData,
+                eventHubRawDataId,
+                partitionId,
+                sequenceNumber);
+
+            await SaveActivityLogsAsync(
+                payload.SessionEventData,
+                eventHubRawDataId,
+                partitionId,
+                sequenceNumber);
+
+            await SaveCheckpointAsync(
+                partitionId,
+                sequenceNumber);
+        }
+        #endregion
+
+        #region Already processed
+        public async Task<bool> IsAlreadyProcessedAsync(
+            string partitionId,
+            long sequenceNumber)
+        {
+            var lastSequence =
+                await GetLastCheckpointAsync(
+                    partitionId);
+
+            if (!lastSequence.HasValue)
+            {
+                return false;
+            }
+
+            return sequenceNumber <= lastSequence.Value;
+        }
+        #endregion
+
+        #region Get last checkpoint
+        public async Task<long?> GetLastCheckpointAsync(
+            string partitionId)
+        {
+            try
+            {
+                var directory =
+                    _fileSystem.GetDirectoryClient(
+                        "processing/checkpoints");
+
+                var file =
+                    directory.GetFileClient(
+                        $"partition-{partitionId}.json");
+
+                if (!await file.ExistsAsync())
+                {
+                    return null;
+                }
+
+                var response =
+                    await file.ReadAsync();
+
+                using var reader =
+                    new StreamReader(
+                        response.Value.Content);
+
+                var json =
+                    await reader.ReadToEndAsync();
+
+                var checkpoint =
+                    JsonConvert.DeserializeObject<PartitionCheckpoint>(
+                        json);
+
+                return checkpoint?.LastSequenceNumber;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        #endregion
+
+        #region Generate event raw data id
+        private static string GenerateEventHubRawDataId(
+            string partitionId,
+            long sequenceNumber)
+        {
+            return $"P{partitionId}-S{sequenceNumber}";
+        }
+        #endregion
+
+        #region Saving checkpoint
+        public async Task SaveCheckpointAsync(
+            string partitionId,
+            long sequenceNumber)
+        {
+            var checkpoint =
+                new PartitionCheckpoint
+                {
+                    PartitionId = partitionId,
+                    LastSequenceNumber = sequenceNumber,
+                    LastProcessedAt = DateTime.UtcNow
+                };
+
+            var directory =
+                _fileSystem.GetDirectoryClient(
+                    "processing/checkpoints");
+
+            await directory.CreateIfNotExistsAsync();
+
+            var file =
+                directory.GetFileClient(
+                    $"partition-{partitionId}.json");
+
+            var json =
+                JsonConvert.SerializeObject(
+                    checkpoint,
+                    Formatting.Indented);
+
+            using var stream =
+                new MemoryStream(
+                    Encoding.UTF8.GetBytes(json));
+
+            await file.UploadAsync(
+                stream,
+                overwrite: true);
+        }
+        #endregion
+
+        #region Saving event hub raw data
+        private async Task SaveEventHubRawDataAsync(
+            string eventHubRawDataId,
+            string partitionId,
+            long sequenceNumber,
+            string offsetValue,
+            DateTime enqueuedTimeUtc,
+            string payload)
+        {
+            var record = new
+            {
+                EventHubRawDataId = eventHubRawDataId,
+                PartitionId = partitionId,
+                SequenceNumber = sequenceNumber,
+                OffsetValue = offsetValue,
+                EnqueuedTimeUtc = enqueuedTimeUtc,
+                ProcessedTimeUtc = DateTime.UtcNow,
+                Payload = payload
+            };
+
+            await SaveJsonAsync(
+                $"RawData/year={enqueuedTimeUtc:yyyy}/month={enqueuedTimeUtc:MM}/day={enqueuedTimeUtc:dd}",
+            fileName:
+                $"{partitionId}-{sequenceNumber}.json",
+            data:
+                record,
+            overwrite:
+                true);
+        }
+        #endregion
+
+        #region Saving system info data
+        private async Task SaveSystemInfoAsync(
+    SystemInfoDto dto,
+    string eventHubRawDataId)
+        {
+            var systemKey =
+                $"{dto.UserName}|{dto.SystemName}";
+
+            var fileName =
+                $"{systemKey}.json";
+
+            var filePath =
+                $"SystemInfo/{fileName}";
+
+            var fileClient =
+                _fileSystem.GetFileClient(
+                    filePath);
+
+            if (await fileClient.ExistsAsync())
+            {
+                var response =
+                    await fileClient.ReadAsync();
+
+                using var reader =
+                    new StreamReader(
+                        response.Value.Content);
+
+                var json =
+                    await reader.ReadToEndAsync();
+
+                var existingRecord =
+                    JsonConvert.DeserializeObject<SystemInfoRawRecord>(
+                        json);
+
+                if (existingRecord != null &&
+                    !DataLakeHelper.HasSystemInfoChanged(
+                        existingRecord,
+                        dto))
+                {
+                    return;
+                }
+            }
+
+            var record = new SystemInfoRawRecord()
+            {
+                RawSystemKey = systemKey,
+
+                UserName = dto.UserName,
+                EmpName = dto.EmpName,
+                Email = dto.Email,
+                SystemName = dto.SystemName,
+                Manufacturer = dto.Manufacturer,
+                Model = dto.Model,
+                OS = dto.OS,
+                RAM = dto.RAM,
+                ROM = dto.ROM,
+                DiscSize = dto.DiscSize,
+                Processor = dto.Processor,
+                SerialNumber = dto.SerialNumber,
+                IpAddress = dto.IpAddress,
+                PublicIPAddress = dto.PublicIPAddress,
+                LogDate = dto.LogDate,
+                IsCameraAvl = dto.IsCameraAvl,
+                IsActive = dto.IsActive,
+                CreatedBy = dto.CreatedBy,
+                CreatedAt = dto.CreatedAt,
+
+                EventHubRawDataId = eventHubRawDataId,
+                LastUpdatedUtc = DateTime.UtcNow
+            };
+
+            await SaveJsonAsync(
+                directoryPath: "SystemInfo",
+                fileName: fileName,
+                data: record,
+                overwrite: true);
+        }
+        #endregion
+
+        #region Saving software inventory data
+        private async Task SaveSoftwareInventoryAsync(
+            SystemInfoDto systemInfo,
+            List<SoftwareInventoryDto> inventories,
+            string eventHubRawDataId)
+        {
+            if (!inventories.Any())
+            {
+                return;
+            }
+
+            var record = new SoftwareInventoryRawRecord()
+            {
+                SystemKey = $"{systemInfo.UserName}|{systemInfo.SystemName}",
+
+                UserName = systemInfo.UserName,
+                SystemName = systemInfo.SystemName,
+
+                EventHubRawDataId = eventHubRawDataId,
+
+                LastUpdatedUtc = DateTime.UtcNow,
+
+                Inventory = inventories.Select(x => new SoftwareInventoryItemRawRecord()
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    PublisherName = x.PublisherName,
+                    InstalledDate = x.InstalledDate,
+                    IsActive = x.IsActive,
+                    CreatedBy = x.CreatedBy,
+                    CreatedAt = x.CreatedAt
+                }).ToList()
+            };
+
+            await SaveJsonAsync(
+                directoryPath: "SoftwareInventory",
+                fileName: $"{systemInfo.UserName}|{systemInfo.SystemName}.json",
+                data: record,
+                overwrite: true);
+        }
+        #endregion
+
+        #region Saving session log data
+        private async Task SaveSessionLogsAsync(
+            List<SessionEventDto> sessions,
+            string eventHubRawDataId,
+            string partitionId,
+            long sequenceNumber)
+        {
+            if (!sessions.Any())
+            {
+                return;
+            }
+
+            var records =
+                sessions.Select(x => new
+                {
+                    SystemKey =
+                        $"{x.UserName}|{x.MachineName}",
+
+                    x.EventType,
+                    x.LogDate,
+                    x.OccuredAt,
+                    x.MachineName,
+                    x.UserName,
+                    x.IsActive,
+                    x.CreatedBy,
+                    x.CreatedAt,
+
+                    EventHubRawDataId = eventHubRawDataId
+                })
+                .ToList();
+
+            var firstSession =
+                sessions.First();
+
+            var logDate =
+                firstSession.LogDate;
+
+            await SaveJsonAsync(
+                directoryPath:
+                    $"SessionLog/year={logDate:yyyy}/month={logDate:MM}/day={logDate:dd}/user={firstSession.UserName}",
+                fileName:
+                    $"{partitionId}-{sequenceNumber}.json",
+                data:
+                    records,
+                overwrite:
+                    true);
+        }
+        #endregion
+
+        #region Saving activity log data
+        private async Task SaveActivityLogsAsync(
+            List<SessionEventDto> sessions,
+            string eventHubRawDataId,
+            string partitionId,
+            long sequenceNumber)
+        {
+            if (!sessions.Any())
+            {
+                return;
+            }
+
+            var activities = new List<ActivityRawRecord>();
+
+            foreach (var session in sessions)
+            {
+                if (session.Activities == null)
+                {
+                    continue;
+                }
+
+                activities.AddRange(
+                    session.Activities.Select(a => new ActivityRawRecord()
+                    {
+                        SystemKey =
+                            $"{session.UserName}|{session.MachineName}",
+                        SessionKey =
+                            $"{session.UserName}|{session.MachineName}|{session.EventType}|{session.OccuredAt:O}",
+
+                        ProcessName = a.ProcessName,
+                        SubActivity = a.SubActivity,
+                        ProcessType = a.ProcessType,
+                        WindowTitle = a.WindowTitle,
+                        ExecutablePath = a.ExecutablePath,
+                        Url = a.Url,
+                        Domain = a.Domain,
+                        LogDate = a.LogDate,
+                        StartTime = a.StartTime,
+                        EndTime = a.EndTime,
+                        DurationSeconds = a.DurationSeconds,
+                        Status = a.Status,
+                        IsOffline = a.IsOffline,
+                        IsActive = a.IsActive,
+                        CreatedBy = a.CreatedBy,
+                        CreatedAt = a.CreatedAt,
+
+                        UserName = session.UserName,
+                        MachineName = session.MachineName,
+
+                        EventHubRawDataId = eventHubRawDataId
+                    }));
+            }
+
+            if (!activities.Any())
+            {
+                return;
+            }
+
+            var firstSession =
+                sessions.First();
+
+            var logDate =
+                firstSession.LogDate;
+
+            await SaveJsonAsync(
+                directoryPath:
+                    $"ActivityLog/year={logDate:yyyy}/month={logDate:MM}/day={logDate:dd}/user={firstSession.UserName}",
+                fileName:
+                    $"{partitionId}-{sequenceNumber}.json",
+                data:
+                    activities,
+                overwrite:
+                    true);
+        }
+        #endregion
+
+        #region Posting data to data lake
+        private async Task SaveJsonAsync(
+        string directoryPath,
+        string fileName,
+        object data,
+        bool overwrite = true)
+        {
+            var directory =
+                _fileSystem.GetDirectoryClient(
+                    directoryPath);
+
+            await directory.CreateIfNotExistsAsync();
+
+            var file =
+                directory.GetFileClient(
+                    fileName);
+
+            var json =
+                JsonConvert.SerializeObject(
+                    data,
+                    Formatting.Indented);
+
+            using var stream =
+                new MemoryStream(
+                    Encoding.UTF8.GetBytes(json));
+
+            await file.UploadAsync(
+                stream,
+                overwrite);
+        }
+        #endregion
+
+        #endregion
+
+        #region PROCESSING
+
+        #region Read user wise activities from lake
+        public async Task<List<string>> GetActivityUserFoldersAsync(CancellationToken cancellationToken = default)
+        {
+            var userFolders =
+                new HashSet<string>(
+                    StringComparer.OrdinalIgnoreCase);
+
+            await foreach (var pathItem in _fileSystem.GetPathsAsync(
+                new DataLakeGetPathsOptions
+                {
+                    Path = "ActivityLog",
+                    Recursive = true
+                },
+                cancellationToken))
+            {
+                if (pathItem.IsDirectory != true)
+                {
+                    continue;
+                }
+
+                if (!pathItem.Name.Contains(
+                        "/user=",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                userFolders.Add(
+                    pathItem.Name);
+            }
+
+            return userFolders.ToList();
+        }
+
+        #endregion
+
+        #region Reads one activity file.
+        public async Task<List<ActivityRawRecord>> ReadActivityFileAsync(string filePath, CancellationToken cancellationToken = default)
+        {
+            var fileClient =
+                _fileSystem.GetFileClient(
+                    filePath);
+
+            if (!await fileClient.ExistsAsync(
+                    cancellationToken))
+            {
+                return new List<ActivityRawRecord>();
+            }
+
+            var response =
+                await fileClient.ReadAsync(
+                    cancellationToken);
+
+            using var reader =
+                new StreamReader(
+                    response.Value.Content);
+
+            var json =
+                await reader.ReadToEndAsync();
+
+            if (string.IsNullOrWhiteSpace(
+                    json))
+            {
+                return new List<ActivityRawRecord>();
+            }
+
+            return JsonConvert.DeserializeObject<
+                       List<ActivityRawRecord>>(json)
+                   ?? new List<ActivityRawRecord>();
+        }
+        #endregion
+
+        #region Returns only files not present in checkpoint.
+        public async Task<List<string>> GetPendingActivityFilesAsync(string userFolder, CancellationToken cancellationToken = default)
+        {
+            var files =
+                new List<string>();
+
+            var processedFiles =
+                await GetProcessedFilesAsync(
+                    userFolder);
+
+            await foreach (var pathItem in _fileSystem.GetPathsAsync(
+                new DataLakeGetPathsOptions
+                {
+                    Path = userFolder,
+                    Recursive = false
+                },
+                cancellationToken))
+            {
+                if (pathItem.IsDirectory == true)
+                {
+                    continue;
+                }
+
+                if (!pathItem.Name.EndsWith(
+                        ".json",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (processedFiles.Contains(
+                        pathItem.Name,
+                        StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                files.Add(
+                    pathItem.Name);
+            }
+
+            return files
+                .OrderBy(x => x)
+                .ToList();
+        }
+        #endregion
+
+        #region Reads checkpoint file for a user/day.
+        public async Task<HashSet<string>> GetProcessedFilesAsync(string userFolder)
+        {
+            var checkpointFile =
+                $"{userFolder.Replace("ActivityLog", "checkpoints")}.json";
+
+            var fileClient =
+                _fileSystem.GetFileClient(
+                    checkpointFile);
+
+            if (!await fileClient.ExistsAsync())
+            {
+                return new HashSet<string>(
+                    StringComparer.OrdinalIgnoreCase);
+            }
+
+            var response =
+                await fileClient.ReadAsync();
+
+            using var reader =
+                new StreamReader(
+                    response.Value.Content);
+
+            var json =
+                await reader.ReadToEndAsync();
+
+            var records =
+                JsonConvert.DeserializeObject<
+                    List<ActivityFileCheckpoint>>(json)
+                ?? new();
+
+            return records
+                .Where(x => x.IsProcessed)
+                .Select(x => x.FilePath)
+                .ToHashSet(
+                    StringComparer.OrdinalIgnoreCase);
+        }
+        #endregion
+
+        #region Mark file as processed
+
+
+        public async Task MarkFileProcessedAsync(string filePath)
+        {
+            var userFolder =
+                Path.GetDirectoryName(filePath)!
+                    .Replace("\\", "/");
+
+            var checkpointFile =
+                $"{userFolder.Replace("ActivityLog", "checkpoints")}.json";
+
+            var checkpointLock =
+                _checkpointLocks.GetOrAdd(
+                    checkpointFile,
+                    _ => new SemaphoreSlim(1, 1));
+
+            await checkpointLock.WaitAsync();
+
+            try
+            {
+                var fileClient =
+                    _fileSystem.GetFileClient(checkpointFile);
+
+                List<ActivityFileCheckpoint> records;
+
+                if (await fileClient.ExistsAsync())
+                {
+                    var response =
+                        await fileClient.ReadAsync();
+
+                    using var reader =
+                        new StreamReader(
+                            response.Value.Content);
+
+                    var json =
+                        await reader.ReadToEndAsync();
+
+                    records =
+                        JsonConvert.DeserializeObject<
+                            List<ActivityFileCheckpoint>>(json)
+                        ?? new();
+                }
+                else
+                {
+                    records = new();
+                }
+
+                if (records.Any(x =>
+                        x.FilePath.Equals(
+                            filePath,
+                            StringComparison.OrdinalIgnoreCase)))
+                {
+                    return;
+                }
+
+                records.Add(
+                    new ActivityFileCheckpoint
+                    {
+                        FilePath = filePath,
+                        IsProcessed = true,
+                        ProcessedTime = DateTime.UtcNow
+                    });
+
+                var output =
+                    JsonConvert.SerializeObject(
+                        records,
+                        Formatting.Indented);
+
+                await using var stream =
+                    new MemoryStream(
+                        Encoding.UTF8.GetBytes(output));
+
+                await fileClient.UploadAsync(
+                    stream,
+                    overwrite: true);
+            }
+            finally
+            {
+                checkpointLock.Release();
+            }
+        }
+        #endregion
+
+
+
+        #region Read System Info from lake
+        public async Task<List<SystemInfoRawRecord>> ReadSystemInfosAsync(CancellationToken cancellationToken = default)
+        {
+            var result =
+                new List<SystemInfoRawRecord>();
+
+            await foreach (var pathItem in _fileSystem.GetPathsAsync(
+                new DataLakeGetPathsOptions
+                {
+                    Path = "SystemInfo",
+                    Recursive = true
+                },
+                cancellationToken))
+            {
+                if (pathItem.IsDirectory == true)
+                {
+                    continue;
+                }
+
+                if (!pathItem.Name.EndsWith(
+                        ".json",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var fileClient =
+                    _fileSystem.GetFileClient(
+                        pathItem.Name);
+
+                var response =
+                    await fileClient.ReadAsync(
+                        cancellationToken);
+
+                using var reader =
+                    new StreamReader(
+                        response.Value.Content);
+
+                var json =
+                    await reader.ReadToEndAsync();
+
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    continue;
+                }
+
+                var record =
+                    JsonConvert.DeserializeObject<SystemInfoRawRecord>(
+                        json);
+
+                if (record != null)
+                {
+                    result.Add(record);
+                }
+            }
+
+            return result;
+        }
+        #endregion
+
+        #region Read Software Inventory from lake
+        public async Task<List<SoftwareInventoryRawRecord>> ReadSoftwareInventoriesAsync(CancellationToken cancellationToken = default)
+        {
+            var result =
+                new List<SoftwareInventoryRawRecord>();
+
+            await foreach (var pathItem in _fileSystem.GetPathsAsync(
+                new DataLakeGetPathsOptions
+                {
+                    Path = "SoftwareInventory",
+                    Recursive = true
+                },
+                cancellationToken))
+            {
+                if (pathItem.IsDirectory == true)
+                {
+                    continue;
+                }
+
+                if (!pathItem.Name.EndsWith(
+                        ".json",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var fileClient =
+                    _fileSystem.GetFileClient(
+                        pathItem.Name);
+
+                var response =
+                    await fileClient.ReadAsync(
+                        cancellationToken);
+
+                using var reader =
+                    new StreamReader(
+                        response.Value.Content);
+
+                var json =
+                    await reader.ReadToEndAsync();
+
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    continue;
+                }
+
+                var record =
+                    JsonConvert.DeserializeObject<SoftwareInventoryRawRecord>(
+                        json);
+
+                if (record != null)
+                {
+                    result.Add(record);
+                }
+            }
+
+            return result;
+        }
+        #endregion
+
+        #endregion
+
+        
+
+    }
+}
