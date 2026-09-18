@@ -1,9 +1,30 @@
-  at Azure.Storage.Files.DataLake.PathRestClient.FlushDataAsync(Nullable`1 timeout, Nullable`1 position, Nullable`1 retainUncommittedData, Nullable`1 close, Nullable`1 contentLength, Byte[] contentMD5, String leaseId, Nullable`1 leaseAction, Nullable`1 leaseDuration, String proposedLeaseId, String cacheControl, String contentType, String contentDisposition, String contentEncoding, String contentLanguage, String ifMatch, String ifNoneMatch, Nullable`1 ifModifiedSince, Nullable`1 ifUnmodifiedSince, String encryptionKey, String encryptionKeySha256, Nullable`1 encryptionAlgorithm, CancellationToken cancellationToken)
-2026-09-18T06:41:32.548994955Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.FlushInternal(Int64 position, Nullable`1 retainUncommittedData, Nullable`1 close, PathHttpHeaders httpHeaders, DataLakeRequestConditions conditions, Nullable`1 leaseAction, Nullable`1 leaseDuration, String proposedLeaseId, Boolean async, CancellationToken cancellationToken)
-2026-09-18T06:41:32.549002088Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.<>c__DisplayClass120_0.<<GetPartitionedUploaderBehaviors>b__1>d.MoveNext()
-2026-09-18T06:41:32.549008921Z       --- End of stack trace from previous location ---
-2026-09-18T06:41:32.549015834Z          at Azure.Storage.PartitionedUploader`2.UploadInternal(Stream content, Nullable`1 expectedContentLength, TServiceSpecificData args, IProgress`1 progressHandler, Boolean async, CancellationToken cancellationToken)
-2026-09-18T06:41:32.549022226Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.StagedUploadInternal(Stream content, DataLakeFileUploadOptions options, Boolean async, CancellationToken cancellationToken)
-2026-09-18T06:41:32.549029179Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
-2026-09-18T06:41:32.549036242Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
-2026-09-18T06:41:32.549044016Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 104
+ WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService[0]
+2026-09-18T07:19:35.305611593Z       Error processing activity file ActivityLog/year=2026/month=09/day=17/user=Shuchi.Yogesh/1-7887.json
+2026-09-18T07:19:35.305630278Z       Azure.RequestFailedException: The uploaded data is not contiguous or the position query parameter value is not equal to the length of the file after appending the uploaded data.
+2026-09-18T07:19:35.305641780Z       RequestId:0ad277e5-801f-0026-733e-4713be000000
+2026-09-18T07:19:35.305651167Z       Time:2026-09-18T07:19:35.3019846Z
+2026-09-18T07:19:35.305659773Z       Status: 400 (The uploaded data is not contiguous or the position query parameter value is not equal to the length of the file after appending the uploaded data.)
+2026-09-18T07:19:35.305668199Z       ErrorCode: InvalidFlushPosition
+2026-09-18T07:19:35.305676525Z       
+2026-09-18T07:19:35.305684901Z       Content:
+2026-09-18T07:19:35.305694118Z       {"error":{"code":"InvalidFlushPosition","message":"The uploaded data is not contiguous or the position query parameter value is not equal to the length of the file after appending the uploaded data.\nRequestId:0ad277e5-801f-0026-733e-4713be000000\nTime:2026-09-18T07:19:35.3019846Z"}}
+2026-09-18T07:19:35.305702674Z       
+2026-09-18T07:19:35.305710839Z       Headers:
+2026-09-18T07:19:35.305719646Z       Server: Windows-Azure-HDFS/1.0 Microsoft-HTTPAPI/2.0
+2026-09-18T07:19:35.305728132Z       x-ms-error-code: InvalidFlushPosition
+2026-09-18T07:19:35.305736427Z       x-ms-request-id: 0ad277e5-801f-0026-733e-4713be000000
+2026-09-18T07:19:35.305745184Z       x-ms-version: 2026-06-06
+2026-09-18T07:19:35.305762847Z       x-ms-client-request-id: cfe4b545-5b1e-4010-bc35-1cd0179a1bed
+2026-09-18T07:19:35.305769620Z       Date: Fri, 18 Sep 2026 07:19:35 GMT
+2026-09-18T07:19:35.305776142Z       Content-Length: 284
+2026-09-18T07:19:35.305782874Z       Content-Type: application/json;charset=utf-8
+2026-09-18T07:19:35.305789537Z       
+2026-09-18T07:19:35.305796771Z          at Azure.Storage.Files.DataLake.PathRestClient.FlushDataAsync(Nullable`1 timeout, Nullable`1 position, Nullable`1 retainUncommittedData, Nullable`1 close, Nullable`1 contentLength, Byte[] contentMD5, String leaseId, Nullable`1 leaseAction, Nullable`1 leaseDuration, String proposedLeaseId, String cacheControl, String contentType, String contentDisposition, String contentEncoding, String contentLanguage, String ifMatch, String ifNoneMatch, Nullable`1 ifModifiedSince, Nullable`1 ifUnmodifiedSince, String encryptionKey, String encryptionKeySha256, Nullable`1 encryptionAlgorithm, CancellationToken cancellationToken)
+2026-09-18T07:19:35.305804345Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.FlushInternal(Int64 position, Nullable`1 retainUncommittedData, Nullable`1 close, PathHttpHeaders httpHeaders, DataLakeRequestConditions conditions, Nullable`1 leaseAction, Nullable`1 leaseDuration, String proposedLeaseId, Boolean async, CancellationToken cancellationToken)
+2026-09-18T07:19:35.305811218Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.<>c__DisplayClass120_0.<<GetPartitionedUploaderBehaviors>b__1>d.MoveNext()
+2026-09-18T07:19:35.305817950Z       --- End of stack trace from previous location ---
+2026-09-18T07:19:35.305824924Z          at Azure.Storage.PartitionedUploader`2.UploadInternal(Stream content, Nullable`1 expectedContentLength, TServiceSpecificData args, IProgress`1 progressHandler, Boolean async, CancellationToken cancellationToken)
+2026-09-18T07:19:35.305831796Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.StagedUploadInternal(Stream content, DataLakeFileUploadOptions options, Boolean async, CancellationToken cancellationToken)
+2026-09-18T07:19:35.305838559Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
+2026-09-18T07:19:35.305845211Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
+2026-09-18T07:19:35.305852285Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 104
