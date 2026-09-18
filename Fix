@@ -146,3 +146,14 @@ var existingSummaryDictionary = existingSummaries
         g => g
             .OrderByDescending(x => x.EmployeeActivityLogSummaryId) // keep the most recent row
             .First());
+
+
++===========================================================
+
+
+var existingLookup = existingSystems
+    .GroupBy(x => $"{x.EmployeeCode}|{x.SystemName}", StringComparer.OrdinalIgnoreCase)
+    .ToDictionary(
+        g => g.Key,
+        g => g.OrderByDescending(x => x.MasterEmployeeSystemInfoId).First(),
+        StringComparer.OrdinalIgnoreCase);
