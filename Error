@@ -67,3 +67,14 @@ fail: WorkVista.EventHub.Processor.EmployeeActivityProcessingWorker[0]
 
 2026-09-18T11:20:14.594521270Z info: WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob[0]
 2026-09-18T11:20:14.594734117Z       ProductivitySummaryJob COMPLETED at 09/18/2026 11:20:14
+
+===================================================
+
+
+fail: WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService[0]
+2026-09-18T12:21:10.119678030Z       Error processing activity file ActivityLog/year=2026/month=09/day=18/user=SG413853/0-13547.json
+2026-09-18T12:21:10.119685264Z       System.ArgumentException: An item with the same key has already been added. Key: 610226|HC1WFM86CPPY3
+2026-09-18T12:21:10.119702626Z          at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToDictionaryAsync[TSource,TKey,TElement](IQueryable`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer, CancellationToken cancellationToken)
+2026-09-18T12:21:10.119709870Z          at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToDictionaryAsync[TSource,TKey,TElement](IQueryable`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer, CancellationToken cancellationToken)
+2026-09-18T12:21:10.119717274Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessActivityLogsAsync(List`1 activityLogs, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 143
+2026-09-18T12:21:10.119725349Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 100
