@@ -52,3 +52,18 @@
 2026-09-18T09:21:28.566068079Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.CreateProductivitySummaryAsync() in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 692
 2026-09-18T09:21:28.566075302Z          at WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob.Execute(IJobExecutionContext context) in C:\WorkVista_Repos\WorkVista.Processor\Jobs\ProductivitySummaryJob.cs:line 28
 2026-09-18T09:21:28.566082997Z          at Quartz.Core.JobRunShell.Run(CancellationToken cancellationToken)]
+
+
+
++========================================
+
+fail: WorkVista.EventHub.Processor.EmployeeActivityProcessingWorker[0]
+2026-09-18T11:20:14.356259428Z       Error while processing activity data.
+2026-09-18T11:20:14.356268836Z       System.ArgumentException: An item with the same key has already been added. Key: SG051690|AMR2A-1FL203136
+2026-09-18T11:20:14.356801138Z          at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+2026-09-18T11:20:14.356837506Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.SyncSystemInfosAsync(List`1 systemInfos, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 420
+2026-09-18T11:20:14.356849207Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 67
+2026-09-18T11:20:14.356868754Z          at WorkVista.EventHub.Processor.EmployeeActivityProcessingWorker.ExecuteAsync(CancellationToken stoppingToken) in C:\WorkVista_Repos\WorkVista.Processor\EmployeeActivityProcessingWorker.cs:line 35
+
+2026-09-18T11:20:14.594521270Z info: WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob[0]
+2026-09-18T11:20:14.594734117Z       ProductivitySummaryJob COMPLETED at 09/18/2026 11:20:14
