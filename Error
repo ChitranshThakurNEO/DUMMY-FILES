@@ -28,3 +28,27 @@
 2026-09-18T07:19:35.305838559Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
 2026-09-18T07:19:35.305845211Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
 2026-09-18T07:19:35.305852285Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 104
+
+
+
+=========================================================================================
+
+
+
+2026-09-18T09:21:28.565956490Z fail: Quartz.Core.ErrorLogger[0]
+2026-09-18T09:21:28.565963954Z       Job DEFAULT.ProductivitySummaryJob threw an exception.
+2026-09-18T09:21:28.565971208Z       Quartz.Core.JobExecutionProcessException: Job threw an unhandled exception
+2026-09-18T09:21:28.565978481Z        ---> System.ArgumentException: An item with the same key has already been added. Key: SG356729_09/18/2026
+2026-09-18T09:21:28.565985725Z          at System.Collections.Generic.Dictionary`2.Add(TKey key, TValue value)
+2026-09-18T09:21:28.565992888Z          at System.Linq.Enumerable.SpanToDictionary[TSource,TKey](ReadOnlySpan`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+2026-09-18T09:21:28.566000132Z          at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+2026-09-18T09:21:28.566015671Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.CreateProductivitySummaryAsync() in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 692
+2026-09-18T09:21:28.566023536Z          at WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob.Execute(IJobExecutionContext context) in C:\WorkVista_Repos\WorkVista.Processor\Jobs\ProductivitySummaryJob.cs:line 28
+2026-09-18T09:21:28.566030990Z          at Quartz.Core.JobRunShell.Run(CancellationToken cancellationToken)
+2026-09-18T09:21:28.566038524Z          --- End of inner exception stack trace --- [See nested exception: System.ArgumentException: An item with the same key has already been added. Key: SG356729_09/18/2026
+2026-09-18T09:21:28.566045827Z          at System.Collections.Generic.Dictionary`2.Add(TKey key, TValue value)
+2026-09-18T09:21:28.566053251Z          at System.Linq.Enumerable.SpanToDictionary[TSource,TKey](ReadOnlySpan`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+2026-09-18T09:21:28.566060635Z          at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
+2026-09-18T09:21:28.566068079Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.CreateProductivitySummaryAsync() in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 692
+2026-09-18T09:21:28.566075302Z          at WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob.Execute(IJobExecutionContext context) in C:\WorkVista_Repos\WorkVista.Processor\Jobs\ProductivitySummaryJob.cs:line 28
+2026-09-18T09:21:28.566082997Z          at Quartz.Core.JobRunShell.Run(CancellationToken cancellationToken)]
