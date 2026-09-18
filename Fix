@@ -133,3 +133,16 @@ public async Task MarkFileProcessedAsync(string filePath)
 }
 
 #endregion
+
+
+
+=======================================================
+
+
+var existingSummaryDictionary = existingSummaries
+    .GroupBy(x => $"{x.EmployeeCode}_{x.LoggedDate}")
+    .ToDictionary(
+        g => g.Key,
+        g => g
+            .OrderByDescending(x => x.EmployeeActivityLogSummaryId) // keep the most recent row
+            .First());
