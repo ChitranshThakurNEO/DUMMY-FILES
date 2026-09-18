@@ -1,0 +1,47 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using WorkVista.EventHub.Processor.Interfaces;
+
+namespace WorkVista.EventHub.Processor
+{
+    public sealed class EmployeeActivityProcessingWorker : BackgroundService
+    {
+        private readonly ILogger<EmployeeActivityProcessingWorker> _logger;
+        private readonly IEmployeeActivityProcessingService _service;
+
+        public EmployeeActivityProcessingWorker(
+            ILogger<EmployeeActivityProcessingWorker> logger,
+            IEmployeeActivityProcessingService service)
+        {
+            _logger = logger;
+            _service = service;
+        }
+        
+        /// <summary>
+        /// Execute method for processing worker
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
+        protected override async Task ExecuteAsync(
+            CancellationToken stoppingToken)
+        {
+            _logger.LogInformation(
+                "Employee Activity Processing Worker started.");
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await _service.ProcessAsync(
+                        stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error while processing activity data.");
+                }
+            }
+        }
+    }
+}
