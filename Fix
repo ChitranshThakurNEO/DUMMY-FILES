@@ -157,3 +157,8 @@ var existingLookup = existingSystems
         g => g.Key,
         g => g.OrderByDescending(x => x.MasterEmployeeSystemInfoId).First(),
         StringComparer.OrdinalIgnoreCase);
+
+==========================
+var existingLookup = existingSystems.ToDictionary(
+       x => $"{x.UserName}|{x.SystemName}",
+       StringComparer.OrdinalIgnoreCase);
