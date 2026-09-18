@@ -1,0 +1,135 @@
+using Azure;
+using Azure.Storage.Files.DataLake.Models;
+
+#region Mark file as processed
+
+public async Task MarkFileProcessedAsync(string filePath)
+{
+    var userFolder =
+        Path.GetDirectoryName(filePath)!
+            .Replace("\\", "/");
+
+    var checkpointFile =
+        $"{userFolder.Replace("ActivityLog", "checkpoints")}.json";
+
+    // In-process guard: avoids pointless duplicate work/contention
+    // from threads within THIS instance. Does NOT protect against
+    // other instances - that's handled by the ETag check below.
+    var checkpointLock =
+        _checkpointLocks.GetOrAdd(
+            checkpointFile,
+            _ => new SemaphoreSlim(1, 1));
+
+    await checkpointLock.WaitAsync();
+
+    try
+    {
+        const int maxAttempts = 5;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            var fileClient =
+                _fileSystem.GetFileClient(checkpointFile);
+
+            List<ActivityFileCheckpoint> records;
+            ETag? currentETag = null;
+
+            var exists = await fileClient.ExistsAsync();
+
+            if (exists)
+            {
+                var response =
+                    await fileClient.ReadAsync();
+
+                currentETag =
+                    response.Value.Properties.ETag;
+
+                using var reader =
+                    new StreamReader(
+                        response.Value.Content);
+
+                var json =
+                    await reader.ReadToEndAsync();
+
+                records =
+                    JsonConvert.DeserializeObject
+                        List<ActivityFileCheckpoint>>(json)
+                    ?? new();
+            }
+            else
+            {
+                records = new();
+            }
+
+            if (records.Any(x =>
+                    x.FilePath.Equals(
+                        filePath,
+                        StringComparison.OrdinalIgnoreCase)))
+            {
+                // Someone else already recorded this file - nothing to do.
+                return;
+            }
+
+            records.Add(
+                new ActivityFileCheckpoint
+                {
+                    FilePath = filePath,
+                    IsProcessed = true,
+                    ProcessedTime = DateTime.UtcNow
+                });
+
+            var output =
+                JsonConvert.SerializeObject(
+                    records,
+                    Formatting.Indented);
+
+            await using var stream =
+                new MemoryStream(
+                    Encoding.UTF8.GetBytes(output));
+
+            // Conditional write:
+            // - If the file existed, only succeed if it still has the
+            //   ETag we read (nobody else wrote to it in between).
+            // - If the file did NOT exist, only succeed if it still
+            //   doesn't exist (nobody else created it first).
+            var conditions = exists
+                ? new DataLakeRequestConditions { IfMatch = currentETag }
+                : new DataLakeRequestConditions { IfNoneMatch = ETag.All };
+
+            try
+            {
+                await fileClient.UploadAsync(
+                    stream,
+                    new DataLakeFileUploadOptions
+                    {
+                        Conditions = conditions
+                    });
+
+                // Success - checkpoint written without collision.
+                return;
+            }
+            catch (RequestFailedException ex) when (
+                ex.Status == 412 || // PreconditionFailed
+                ex.ErrorCode == "ConditionNotMet" ||
+                ex.ErrorCode == "InvalidFlushPosition")
+            {
+                // Someone else modified the checkpoint concurrently.
+                // Loop around, re-read the latest version, and retry.
+                if (attempt == maxAttempts)
+                {
+                    throw;
+                }
+
+                await Task.Delay(
+                    TimeSpan.FromMilliseconds(
+                        100 * attempt));
+            }
+        }
+    }
+    finally
+    {
+        checkpointLock.Release();
+    }
+}
+
+#endregion
