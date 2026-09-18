@@ -1,0 +1,34 @@
+
+CREATE   PROCEDURE [dbo].[sp_GetEmployeesDetailsByNTID]
+
+    @NTId NVARCHAR(100)
+
+AS
+
+BEGIN
+
+    SET NOCOUNT ON;
+
+
+
+    SELECT
+
+        me.GLOBAL_ID AS EmployeeCode,
+
+        me.FullName,
+
+        me.Email,
+
+        me.DEPARTMENT
+
+    FROM EmployeeNetworkMapping AS enm
+
+    INNER JOIN vw_MasterEmployee AS me
+
+        ON me.EmployeeCode = enm.EmployeeCode
+
+        OR me.GLOBAL_ID = enm.EmployeeCode
+
+    WHERE enm.NetworkId = @NTId;
+
+END
