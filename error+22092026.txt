@@ -1,3 +1,19 @@
+Provisioning and deploying (azd up)
+Packaging overlaps with provisioning for faster execution.
+
+  (-) Skipped: Didn't find new changes.
+
+  Service              Status        Duration
+  ───────────────────  ────────────  ──────────
+  ✗ workvista-api        Failed        1m20s
+  ✗ workvista-consumer   Failed        1m21s
+  ✗ workvista-migration  Failed        1m21s
+  ✗ workvista-processor  Failed        1m21s
+
+ERROR: empty dotnet configuration output
+
+Suggestion: Ensure project 'C:\WorkVista_Repos\WorkVista.Consumer\WorkVista.Consumer.csproj' is enabled for container support and try again. To enable SDK container support, set the 'EnableSdkContainerSupport' property to true in your project file
+
 azd : 2026/09/22 16:17:09 main.go:55: azd version: 1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a)
 At line:1 char:1
 + azd up --debug 2>&1 | Tee-Object azd-debug.txt
