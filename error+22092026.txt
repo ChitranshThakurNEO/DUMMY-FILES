@@ -3793,3 +3793,11 @@ Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
    X-Ms-Correlation-Request-Id: REDACTED
 2026/09/22 16:18:16 main.go:51: Retry: response 200
 2026/09/22 16:18:16 main.go:51: Retry: exit due to non-retriable status code
+
+
+=================================================================================================================================
+
+
+Aspire.AppHost.Sdk
+
+   dotnet msbuild C:\WorkVista_Repos\WorkVista.Consumer\WorkVista.Consumer.csproj -getProperty:ContainerRepository -getProperty:ContainerImageTag -v:diag
