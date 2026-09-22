@@ -3801,3 +3801,8 @@ Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
 Aspire.AppHost.Sdk
 
    dotnet msbuild C:\WorkVista_Repos\WorkVista.Consumer\WorkVista.Consumer.csproj -getProperty:ContainerRepository -getProperty:ContainerImageTag -v:diag
+
++======================================-==-=-=-=-=-=-=-=-=-=-=-
+
+<ContainerRepository>workvista-consumer</ContainerRepository>
+<ContainerImageTag>latest</ContainerImageTag>
