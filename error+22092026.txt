@@ -1,0 +1,3779 @@
+azd : 2026/09/22 16:17:09 main.go:55: azd version: 1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a)
+At line:1 char:1
++ azd up --debug 2>&1 | Tee-Object azd-debug.txt
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026/09/22 16:1...a18b0f9f24071a):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+2026/09/22 16:17:09 detect_process.go:56: detect_process.go: Parent process detection: depth=0, pid=4960, ppid=13896,
+name="powershell.exe", executable="C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+2026/09/22 16:17:09 detect_process.go:56: detect_process.go: Parent process detection: depth=1, pid=13896, ppid=13736,
+name="explorer.exe", executable="C:\\Windows\\explorer.exe"
+2026/09/22 16:17:09 detect_process.go:56: detect_process.go: Parent process detection: depth=2, pid=13736, ppid=0, name="",
+executable=""
+2026/09/22 16:17:09 detect_process.go:72: detect_process.go: Parent process detection: no agent found in process tree
+2026/09/22 16:17:09 detect.go:26: Agent detection result: detected=false, no AI coding agent detected
+2026/09/22 16:17:09 project.go:166: Reading project from file 'C:\WorkVista_Repos\azure.yaml'
+2026/09/22 16:17:09 middleware.go:100: running middleware 'debug'
+2026/09/22 16:17:09 middleware.go:100: running middleware 'ux'
+2026/09/22 16:17:09 middleware.go:100: running middleware 'telemetry'
+2026/09/22 16:17:09 telemetry.go:68: TraceID: 2d60c635a3ac1bc70785632e13fbd07d
+2026/09/22 16:17:09 middleware.go:100: running middleware 'error'
+2026/09/22 16:17:09 middleware.go:100: running middleware 'loginGuard'
+2026/09/22 16:17:10 middleware.go:100: running middleware 'hooks'
+2026/09/22 16:17:15 command_runner.go:325: Run exec: 'dotnet msbuild C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj
+--ignore:.sln --getProperty:IsAspireHost --getItem:ProjectCapability' , exit code: 0
+Additional env:
+   DOTNET_CLI_WORKLOAD_UPDATE_NOTIFY_DISABLE=<redacted>
+   DOTNET_NOLOGO=<redacted>
+-------------------------------------stdout-------------------------------------------
+{
+  "Properties": {
+    "IsAspireHost": "true"
+  },
+  "Items": {
+    "ProjectCapability": [
+      {
+        "Identity": "LocalUserSecrets",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\LocalUserSecrets",
+        "RootDir": "C:\\",
+        "Filename": "LocalUserSecrets",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\microsoft.extensions.configuration.usersecrets\\1
+0.0.10\\buildTransitive\\net8.0\\Microsoft.Extensions.Configuration.UserSecrets.props",
+        "DefiningProjectDirectory":
+"C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\microsoft.extensions.configuration.usersecrets\\10.0.10\\buildTransitive\\net8.0\\",
+        "DefiningProjectName": "Microsoft.Extensions.Configuration.UserSecrets",
+        "DefiningProjectExtension": ".props"
+      },
+      {
+        "Identity": "GenerateDocumentationFile",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\GenerateDocumentationFile",
+        "RootDir": "C:\\",
+        "Filename": "GenerateDocumentationFile",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program
+Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.Sdk.BeforeCommon.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\",
+        "DefiningProjectName": "Microsoft.NET.Sdk.BeforeCommon",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "CSharp",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\CSharp",
+        "RootDir": "C:\\",
+        "Filename": "CSharp",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.CSharp.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.CSharp.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "Managed",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\Managed",
+        "RootDir": "C:\\",
+        "Filename": "Managed",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.CSharp.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.CSharp.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "ReferencesFolder",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\ReferencesFolder",
+        "RootDir": "C:\\",
+        "Filename": "ReferencesFolder",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.CSharp.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.CSharp.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "LanguageService",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\LanguageService",
+        "RootDir": "C:\\",
+        "Filename": "LanguageService",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.CSharp.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.CSharp.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "RelativePathDerivedDefaultNamespace",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\RelativePathDerivedDefaultNamespace",
+        "RootDir": "C:\\",
+        "Filename": "RelativePathDerivedDefaultNamespace",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.CSharp.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.CSharp.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "AssemblyReferences",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\AssemblyReferences",
+        "RootDir": "C:\\",
+        "Filename": "AssemblyReferences",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "COMReferences",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\COMReferences",
+        "RootDir": "C:\\",
+        "Filename": "COMReferences",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "ProjectReferences",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\ProjectReferences",
+        "RootDir": "C:\\",
+        "Filename": "ProjectReferences",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "SharedProjectReferences",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\SharedProjectReferences",
+        "RootDir": "C:\\",
+        "Filename": "SharedProjectReferences",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "OutputGroups",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\OutputGroups",
+        "RootDir": "C:\\",
+        "Filename": "OutputGroups",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "AllTargetOutputGroups",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\AllTargetOutputGroups",
+        "RootDir": "C:\\",
+        "Filename": "AllTargetOutputGroups",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "VisualStudioWellKnownOutputGroups",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\VisualStudioWellKnownOutputGroups",
+        "RootDir": "C:\\",
+        "Filename": "VisualStudioWellKnownOutputGroups",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "SingleFileGenerators",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\SingleFileGenerators",
+        "RootDir": "C:\\",
+        "Filename": "SingleFileGenerators",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "DeclaredSourceItems",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\DeclaredSourceItems",
+        "RootDir": "C:\\",
+        "Filename": "DeclaredSourceItems",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "UserSourceItems",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\UserSourceItems",
+        "RootDir": "C:\\",
+        "Filename": "UserSourceItems",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Microsoft.Common.CurrentVersion.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "Microsoft.Common.CurrentVersion",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "Aspire",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\Aspire",
+        "RootDir": "C:\\",
+        "Filename": "Aspire",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath":
+"C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.hosting.apphost\\13.4.6\\build\\Aspire.Hosting.AppHost.targets",
+        "DefiningProjectDirectory": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.hosting.apphost\\13.4.6\\build\\",
+        "DefiningProjectName": "Aspire.Hosting.AppHost",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "Aspire_13.4.6",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\Aspire_13.4.6",
+        "RootDir": "C:\\",
+        "Filename": "Aspire_13.4",
+        "Extension": ".6",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath":
+"C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.hosting.apphost\\13.4.6\\build\\Aspire.Hosting.AppHost.targets",
+        "DefiningProjectDirectory": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.hosting.apphost\\13.4.6\\build\\",
+        "DefiningProjectName": "Aspire.Hosting.AppHost",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "AspireDashboard",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\AspireDashboard",
+        "RootDir": "C:\\",
+        "Filename": "AspireDashboard",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath":
+"C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.dashboard.sdk.win-x64\\13.4.6\\build\\Aspire.Dashboard.Sdk.win-x64.targets",
+        "DefiningProjectDirectory": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.dashboard.sdk.win-x64\\13.4.6\\build\\",
+        "DefiningProjectName": "Aspire.Dashboard.Sdk.win-x64",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "CrossPlatformExecutable",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\CrossPlatformExecutable",
+Analyzing Aspire Application (this might take a moment...)
+        "RootDir": "C:\\",
+        "Filename": "CrossPlatformExecutable",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program
+Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.Sdk.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\",
+        "DefiningProjectName": "Microsoft.NET.Sdk",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "NativeAOT",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\NativeAOT",
+        "RootDir": "C:\\",
+        "Filename": "NativeAOT",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program
+Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.Sdk.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\",
+        "DefiningProjectName": "Microsoft.NET.Sdk",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "SupportsHotReload",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\SupportsHotReload",
+        "RootDir": "C:\\",
+        "Filename": "SupportsHotReload",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program
+Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.Sdk.CSharp.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\",
+        "DefiningProjectName": "Microsoft.NET.Sdk.CSharp",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "SupportsComputeRunCommand",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\SupportsComputeRunCommand",
+        "RootDir": "C:\\",
+        "Filename": "SupportsComputeRunCommand",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program
+Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.Sdk.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk\\targets\\",
+        "DefiningProjectName": "Microsoft.NET.Sdk",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "Pack",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\Pack",
+        "RootDir": "C:\\",
+        "Filename": "Pack",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\NuGet.Build.Tasks.Pack.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\",
+        "DefiningProjectName": "NuGet.Build.Tasks.Pack",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "NetSdkOCIImageBuild",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\NetSdkOCIImageBuild",
+        "RootDir": "C:\\",
+        "Filename": "NetSdkOCIImageBuild",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Program
+Files\\dotnet\\sdk\\10.0.401\\Containers\\build\\Microsoft.NET.Build.Containers.targets",
+        "DefiningProjectDirectory": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Containers\\build\\",
+        "DefiningProjectName": "Microsoft.NET.Build.Containers",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "DynamicFileNesting",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\DynamicFileNesting",
+        "RootDir": "C:\\",
+        "Filename": "DynamicFileNesting",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.apphost.sdk\\13.3.5\\Sdk\\Sdk.targets",
+        "DefiningProjectDirectory": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.apphost.sdk\\13.3.5\\Sdk\\",
+        "DefiningProjectName": "Sdk",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "DynamicFileNestingEnabled",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\DynamicFileNestingEnabled",
+        "RootDir": "C:\\",
+        "Filename": "DynamicFileNestingEnabled",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.apphost.sdk\\13.3.5\\Sdk\\Sdk.targets",
+        "DefiningProjectDirectory": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.apphost.sdk\\13.3.5\\Sdk\\",
+        "DefiningProjectName": "Sdk",
+        "DefiningProjectExtension": ".targets"
+      },
+      {
+        "Identity": "AspireOrchestration",
+        "FullPath": "C:\\WorkVista_Repos\\WorkVista.AppHost\\AspireOrchestration",
+        "RootDir": "C:\\",
+        "Filename": "AspireOrchestration",
+        "Extension": "",
+        "RelativeDir": "",
+        "Directory": "WorkVista_Repos\\WorkVista.AppHost\\",
+        "RecursiveDir": "",
+        "ModifiedTime": "",
+        "CreatedTime": "",
+        "AccessedTime": "",
+        "DefiningProjectFullPath": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.apphost.sdk\\13.3.5\\Sdk\\Sdk.targets",
+        "DefiningProjectDirectory": "C:\\Users\\Chitransh.Thakur\\.nuget\\packages\\aspire.apphost.sdk\\13.3.5\\Sdk\\",
+        "DefiningProjectName": "Sdk",
+        "DefiningProjectExtension": ".targets"
+      }
+    ]
+  }
+}
+2026/09/22 16:17:40 command_runner.go:325: Run exec: 'dotnet run --project WorkVista.AppHost.csproj --publisher manifest
+--output-path C:\Users\CHITRA~1.THA\AppData\Local\Temp\azd-provision143488661\apphost-manifest.json' , exit code: 0
+-------------------------------------stdout-------------------------------------------
+Using launch settings from Properties\launchSettings.json...
+Building...
+C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj : warning NU1504: Duplicate 'PackageReference' items found. Remove
+the duplicate items or use the Update functionality to ensure a consistent restore behavior. The duplicate 'PackageReference' items
+are: Aspire.Dashboard.Sdk.win-x64 13.4.6, Aspire.Dashboard.Sdk.win-x64 13.4.6; Aspire.Hosting.Orchestration.win-x64 13.4.6,
+Aspire.Hosting.Orchestration.win-x64 13.4.6.
+C:\WorkVista_Repos\WorkVista.Processor\WorkVista.Processor.csproj : warning NU1510: PackageReference System.Text.Json will not be
+pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+[C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj]
+C:\WorkVista_Repos\WorkVista.Processor\WorkVista.Processor.csproj : warning NU1510: PackageReference System.Formats.Asn1 will not
+be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+[C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj]
+C:\WorkVista_Repos\WorkVista.Consumer\WorkVista.Consumer.csproj : warning NU1510: PackageReference System.Text.Json will not be
+pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+[C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj]
+C:\WorkVista_Repos\WorkVista\WorkVista.API.csproj : warning NU1510: PackageReference Microsoft.Extensions.Caching.Memory will not
+be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+[C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj]
+C:\WorkVista_Repos\WorkVista\WorkVista.API.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This
+package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+[C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj]
+C:\WorkVista_Repos\WorkVista\WorkVista.API.csproj : warning NU1510: PackageReference System.Formats.Asn1 will not be pruned. This
+package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+[C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj]
+C:\WorkVista_Repos\WorkVista.Consumer\WorkVista.Consumer.csproj : warning NU1510: PackageReference System.Formats.Asn1 will not be
+pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+[C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj]
+C:\WorkVista_Repos\WorkVista.AppHost\WorkVista.AppHost.csproj : warning NU1504: Duplicate 'PackageReference' items found. Remove
+the duplicate items or use the Update functionality to ensure a consistent restore behavior. The duplicate 'PackageReference' items
+are: Aspire.Dashboard.Sdk.win-x64 13.4.6, Aspire.Dashboard.Sdk.win-x64 13.4.6; Aspire.Hosting.Orchestration.win-x64 13.4.6,
+Aspire.Hosting.Orchestration.win-x64 13.4.6.
+C:\WorkVista_Repos\WorkVista.Consumer\WorkVista.Consumer.csproj : warning NU1510: PackageReference System.Text.Json will not be
+pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+C:\WorkVista_Repos\WorkVista.Consumer\WorkVista.Consumer.csproj : warning NU1510: PackageReference System.Formats.Asn1 will not be
+pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+C:\WorkVista_Repos\WorkVista.Processor\WorkVista.Processor.csproj : warning NU1510: PackageReference System.Text.Json will not be
+pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+C:\WorkVista_Repos\WorkVista.Processor\WorkVista.Processor.csproj : warning NU1510: PackageReference System.Formats.Asn1 will not
+be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+C:\WorkVista_Repos\WorkVista\WorkVista.API.csproj : warning NU1510: PackageReference Microsoft.Extensions.Caching.Memory will not
+be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+C:\WorkVista_Repos\WorkVista\WorkVista.API.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This
+package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+C:\WorkVista_Repos\WorkVista\WorkVista.API.csproj : warning NU1510: PackageReference System.Formats.Asn1 will not be pruned. This
+package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+info: Aspire.Hosting.Azure.AppContainers.AzureContainerAppEnvironmentResource[0]
+      HTTP endpoints will use HTTPS (port 443) in Azure Container Apps: workvista-api:http. To opt out, use
+.WithHttpsUpgrade(false) on the container app environment.
+info: Aspire.Hosting.DistributedApplication[0]
+      Aspire AppHost version: 13.4.6+87fe259e4fc244c599019a7b1304c85a1488f248
+info: Aspire.Hosting.Publishing.ManifestPublisher[0]
+      Published manifest to: C:\Users\Chitransh.Thakur\AppData\Local\Temp\azd-provision143488661\apphost-manifest.json
+2026/09/22 16:17:40 hooks.go:136: service 'workvista-api' does not require any command hooks.
+2026/09/22 16:17:40 hooks.go:136: service 'workvista-consumer' does not require any command hooks.
+2026/09/22 16:17:40 hooks.go:136: service 'workvista-migration' does not require any command hooks.
+2026/09/22 16:17:40 hooks.go:136: service 'workvista-processor' does not require any command hooks.
+2026/09/22 16:17:40 hooks.go:81: azd project does not contain any command hooks, skipping command hook registrations.
+2026/09/22 16:17:40 middleware.go:100: running middleware 'extensions'
+2026/09/22 16:17:40 importer.go:310: auto-detected infrastructure provider: bicep
+2026/09/22 16:17:40 importer.go:324: using infrastructure from C:\WorkVista_Repos\infra directory
+Initialize bicep provider
+2026/09/22 16:17:42 command_runner.go:325: Run exec: 'C:\Users\Chitransh.Thakur\.azd\bin\bicep.exe --version' , exit code: 0
+-------------------------------------stdout-------------------------------------------
+Bicep CLI version 0.45.15 (6a4a640fd8)
+2026/09/22 16:17:42 bicep.go:120: bicep version: 0.45.15
+2026/09/22 16:17:42 bicep.go:134: using local bicep: C:\Users\Chitransh.Thakur\.azd\bin\bicep.exe
+2026/09/22 16:17:52 command_runner.go:325: Run exec: 'C:\Users\Chitransh.Thakur\.azd\bin\bicep.exe build
+C:\WorkVista_Repos\infra\main.bicep --stdout' , exit code: 0
+-------------------------------------stdout-------------------------------------------
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.45.15.27210",
+      "templateHash": "14128862830741201492"
+    }
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "metadata": {
+        "description": "Name of the environment that can be used as part of naming resource convention, the name of the resource
+group for your application will use this name, prefixed with rg-"
+      }
+    },
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The location used for all deployed resources"
+      }
+    },
+    "principalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Id of the user or app to assign application roles"
+      }
+    },
+    "container_env_subnet_id": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "jwt_signing_key": {
+      "type": "securestring"
+    },
+    "sql_password": {
+      "type": "securestring"
+    }
+  },
+  "variables": {
+    "tags": {
+      "azd-env-name": "[parameters('environmentName')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2022-09-01",
+      "name": "[format('rg-{0}', parameters('environmentName'))]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "appinsights",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "18064508040015884162"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "applicationType": {
+              "type": "string",
+              "defaultValue": "web"
+            },
+            "kind": {
+              "type": "string",
+              "defaultValue": "web"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2025-02-01",
+              "name": "[take(format('lawappinsights-{0}', uniqueString(resourceGroup().id)), 63)]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "workspaceCapping": {
+                  "dailyQuotaGb": 5
+                }
+              },
+              "tags": {
+                "aspire-resource-name": "law_appinsights"
+              }
+            },
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[take(format('appinsights-{0}', uniqueString(resourceGroup().id)), 260)]",
+              "kind": "[parameters('kind')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "Application_Type": "[parameters('applicationType')]",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', take(format('lawappinsights-{0}',
+uniqueString(resourceGroup().id)), 63))]"
+              },
+              "tags": {
+                "aspire-resource-name": "appinsights"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', take(format('lawappinsights-{0}',
+uniqueString(resourceGroup().id)), 63))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "appInsightsConnectionString": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', take(format('appinsights-{0}',
+uniqueString(resourceGroup().id)), 260)), '2020-02-02').ConnectionString]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('appinsights-{0}', uniqueString(resourceGroup().id)), 260)]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', take(format('appinsights-{0}',
+uniqueString(resourceGroup().id)), 260))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "container-environment",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "container_env_subnet_id": {
+            "value": "[parameters('container_env_subnet_id')]"
+          },
+          "container_environment_acr_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment-acr'),
+'2025-04-01').outputs.name.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "userPrincipalId": {
+            "value": "[parameters('principalId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "4732105117870852088"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "userPrincipalId": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {}
+            },
+            "container_environment_acr_outputs_name": {
+              "type": "string"
+            },
+            "container_env_subnet_id": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "resourceToken": "[uniqueString(resourceGroup().id)]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2024-11-30",
+              "name": "[format('mi-{0}', variables('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', replace(format('acr-{0}',
+variables('resourceToken')), '-', ''))]",
+              "name": "[guid(resourceId('Microsoft.ContainerRegistry/registries', replace(format('acr-{0}',
+variables('resourceToken')), '-', '')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('mi-{0}',
+variables('resourceToken'))), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'7f951dda-4ed3-4680-a7ca-43fe172d538d'))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('mi-{0}',
+variables('resourceToken'))), '2024-11-30').principalId]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('mi-{0}', variables('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2025-02-01",
+              "name": "[format('law-{0}', variables('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                }
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2025-07-01",
+              "name": "[format('cae-{0}', variables('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', format('law-{0}',
+variables('resourceToken'))), '2025-02-01').customerId]",
+                    "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', format('law-{0}',
+variables('resourceToken'))), '2025-02-01').primarySharedKey]"
+                  }
+                },
+                "vnetConfiguration": {
+                  "internal": true,
+                  "infrastructureSubnetId": "[parameters('container_env_subnet_id')]"
+                },
+                "workloadProfiles": [
+                  {
+                    "name": "WVProfile",
+                    "workloadProfileType": "D4",
+                    "minimumCount": 2,
+                    "maximumCount": 10
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', format('law-{0}', variables('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.App/managedEnvironments/dotNetComponents",
+              "apiVersion": "2025-10-02-preview",
+              "name": "[format('{0}/{1}', format('cae-{0}', variables('resourceToken')), 'aspire-dashboard')]",
+              "properties": {
+                "componentType": "AspireDashboard"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', variables('resourceToken')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "AZURE_LOG_ANALYTICS_WORKSPACE_NAME": {
+              "type": "string",
+              "value": "[format('law-{0}', variables('resourceToken'))]"
+            },
+            "AZURE_LOG_ANALYTICS_WORKSPACE_ID": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.OperationalInsights/workspaces', format('law-{0}', variables('resourceToken')))]"
+            },
+            "AZURE_CONTAINER_REGISTRY_NAME": {
+              "type": "string",
+              "value": "[replace(format('acr-{0}', variables('resourceToken')), '-', '')]"
+            },
+            "AZURE_CONTAINER_REGISTRY_ENDPOINT": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries', replace(format('acr-{0}',
+variables('resourceToken')), '-', '')), '2025-04-01').loginServer]"
+            },
+            "AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('mi-{0}',
+variables('resourceToken')))]"
+            },
+            "AZURE_CONTAINER_APPS_ENVIRONMENT_NAME": {
+              "type": "string",
+              "value": "[format('cae-{0}', variables('resourceToken'))]"
+            },
+            "AZURE_CONTAINER_APPS_ENVIRONMENT_ID": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', variables('resourceToken')))]"
+            },
+            "AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', variables('resourceToken'))),
+'2025-07-01').defaultDomain]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment-acr')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "container-environment-acr",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "372000904710280702"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "variables": {
+            "resourceToken": "[uniqueString(resourceGroup().id)]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ContainerRegistry/registries",
+              "apiVersion": "2025-04-01",
+              "name": "[replace(format('acr-{0}', variables('resourceToken')), '-', '')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic"
+              },
+              "tags": {
+                "aspire-resource-name": "container-environment-acr"
+              }
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "[replace(format('acr-{0}', variables('resourceToken')), '-', '')]"
+            },
+            "loginServer": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries', replace(format('acr-{0}',
+variables('resourceToken')), '-', '')), '2025-04-01').loginServer]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ContainerRegistry/registries', replace(format('acr-{0}',
+variables('resourceToken')), '-', ''))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "rawstorage",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "13181442972500369568"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2024-01-01",
+              "name": "[take(format('rawstorage{0}', uniqueString(resourceGroup().id)), 24)]",
+              "kind": "StorageV2",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_GRS"
+              },
+              "properties": {
+                "accessTier": "Hot",
+                "allowSharedKeyAccess": false,
+                "isHnsEnabled": true,
+                "minimumTlsVersion": "TLS1_2",
+                "networkAcls": {
+                  "defaultAction": "Allow"
+                }
+              },
+              "tags": {
+                "aspire-resource-name": "rawstorage"
+              }
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2024-01-01",
+              "name": "[format('{0}/{1}', take(format('rawstorage{0}', uniqueString(resourceGroup().id)), 24), 'default')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', take(format('rawstorage{0}', uniqueString(resourceGroup().id)),
+24))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2024-01-01",
+              "name": "[format('{0}/{1}/{2}', take(format('rawstorage{0}', uniqueString(resourceGroup().id)), 24), 'default',
+'workvista-raw-events')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', take(format('rawstorage{0}',
+uniqueString(resourceGroup().id)), 24), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "blobEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('rawstorage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.blob]"
+            },
+            "dataLakeEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('rawstorage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.dfs]"
+            },
+            "queueEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('rawstorage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.queue]"
+            },
+            "tableEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('rawstorage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.table]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('rawstorage{0}', uniqueString(resourceGroup().id)), 24)]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Storage/storageAccounts', take(format('rawstorage{0}',
+uniqueString(resourceGroup().id)), 24))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "redis",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "redis_kv_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv'), '2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "101420016045012160"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "redis_kv_outputs_name": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Cache/redisEnterprise",
+              "apiVersion": "2025-07-01",
+              "name": "[take(format('redis-{0}', uniqueString(resourceGroup().id)), 60)]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Balanced_B1"
+              },
+              "properties": {
+                "minimumTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled"
+              }
+            },
+            {
+              "type": "Microsoft.Cache/redisEnterprise/databases",
+              "apiVersion": "2025-07-01",
+              "name": "[format('{0}/{1}', take(format('redis-{0}', uniqueString(resourceGroup().id)), 60), 'default')]",
+              "properties": {
+                "accessKeysAuthentication": "Enabled",
+                "port": 10000
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cache/redisEnterprise', take(format('redis-{0}', uniqueString(resourceGroup().id)), 60))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2024-11-01",
+              "name": "[format('{0}/{1}', parameters('redis_kv_outputs_name'), 'connectionstrings--redis')]",
+              "properties": {
+                "value": "[format('{0}:10000,ssl=true,password=<redacted> reference(resourceId('Microsoft.Cache/redisEnterprise',
+take(format('redis-{0}', uniqueString(resourceGroup().id)), 60)), '2025-07-01').hostName,
+listKeys(resourceId('Microsoft.Cache/redisEnterprise/databases', take(format('redis-{0}', uniqueString(resourceGroup().id)), 60),
+'default'), '2025-07-01').primaryKey)]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cache/redisEnterprise', take(format('redis-{0}', uniqueString(resourceGroup().id)), 60))]",
+                "[resourceId('Microsoft.Cache/redisEnterprise/databases', take(format('redis-{0}',
+uniqueString(resourceGroup().id)), 60), 'default')]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2024-11-01",
+              "name": "[format('{0}/{1}', parameters('redis_kv_outputs_name'), 'primaryaccesskey--redis')]",
+              "properties": {
+                "value": "[listKeys(resourceId('Microsoft.Cache/redisEnterprise/databases', take(format('redis-{0}',
+uniqueString(resourceGroup().id)), 60), 'default'), '2025-07-01').primaryKey]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cache/redisEnterprise/databases', take(format('redis-{0}',
+uniqueString(resourceGroup().id)), 60), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "[take(format('redis-{0}', uniqueString(resourceGroup().id)), 60)]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Cache/redisEnterprise', take(format('redis-{0}', uniqueString(resourceGroup().id)),
+60))]"
+            },
+            "hostName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Cache/redisEnterprise', take(format('redis-{0}',
+uniqueString(resourceGroup().id)), 60)), '2025-07-01').hostName]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "redis-kv",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "8878968352190035793"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2024-11-01",
+              "name": "[take(format('rediskv-{0}', uniqueString(resourceGroup().id)), 24)]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "tenantId": "[tenant().tenantId]",
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "enableRbacAuthorization": true
+              },
+              "tags": {
+                "aspire-resource-name": "redis-kv"
+              }
+            }
+          ],
+          "outputs": {
+            "vaultUri": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults', take(format('rediskv-{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-11-01').vaultUri]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('rediskv-{0}', uniqueString(resourceGroup().id)), 24)]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults', take(format('rediskv-{0}', uniqueString(resourceGroup().id)),
+24))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "sql",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "981123572631599195"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2024-11-30",
+              "name": "[take(format('sql-admin-{0}', uniqueString(resourceGroup().id)), 63)]",
+              "location": "[parameters('location')]"
+            },
+            {
+              "type": "Microsoft.Sql/servers",
+              "apiVersion": "2023-08-01",
+              "name": "[take(format('sql-{0}', uniqueString(resourceGroup().id)), 63)]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "administrators": {
+                  "administratorType": "ActiveDirectory",
+                  "login": "[take(format('sql-admin-{0}', uniqueString(resourceGroup().id)), 63)]",
+                  "sid": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', take(format('sql-admin-{0}',
+uniqueString(resourceGroup().id)), 63)), '2024-11-30').principalId]",
+                  "tenantId": "[subscription().tenantId]",
+                  "azureADOnlyAuthentication": true
+                },
+                "minimalTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled",
+                "version": "12.0"
+              },
+              "tags": {
+                "aspire-resource-name": "sql"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', take(format('sql-admin-{0}',
+uniqueString(resourceGroup().id)), 63))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/firewallRules",
+              "apiVersion": "2023-08-01",
+              "name": "[format('{0}/{1}', take(format('sql-{0}', uniqueString(resourceGroup().id)), 63), 'AllowAllAzureIps')]",
+              "properties": {
+                "endIpAddress": "0.0.0.0",
+                "startIpAddress": "0.0.0.0"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', take(format('sql-{0}', uniqueString(resourceGroup().id)), 63))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2023-08-01",
+              "name": "[format('{0}/{1}', take(format('sql-{0}', uniqueString(resourceGroup().id)), 63), 'WorkVista')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "freeLimitExhaustionBehavior": "AutoPause",
+                "useFreeLimit": false
+              },
+              "sku": {
+                "name": "GP_S_Gen5_16"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', take(format('sql-{0}', uniqueString(resourceGroup().id)), 63))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "sqlServerFqdn": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Sql/servers', take(format('sql-{0}', uniqueString(resourceGroup().id)),
+63)), '2023-08-01').fullyQualifiedDomainName]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('sql-{0}', uniqueString(resourceGroup().id)), 63)]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Sql/servers', take(format('sql-{0}', uniqueString(resourceGroup().id)), 63))]"
+            },
+            "sqlServerAdminName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Sql/servers', take(format('sql-{0}', uniqueString(resourceGroup().id)),
+63)), '2023-08-01').administrators.login]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "storage",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "17500863021217320574"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2024-01-01",
+              "name": "[take(format('storage{0}', uniqueString(resourceGroup().id)), 24)]",
+              "kind": "StorageV2",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_GRS"
+              },
+              "properties": {
+                "accessTier": "Hot",
+                "allowSharedKeyAccess": false,
+                "isHnsEnabled": false,
+                "minimumTlsVersion": "TLS1_2",
+                "networkAcls": {
+                  "defaultAction": "Allow"
+                }
+              },
+              "tags": {
+                "aspire-resource-name": "storage"
+              }
+            }
+          ],
+          "outputs": {
+            "blobEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('storage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.blob]"
+            },
+            "dataLakeEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('storage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.dfs]"
+            },
+            "queueEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('storage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.queue]"
+            },
+            "tableEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', take(format('storage{0}',
+uniqueString(resourceGroup().id)), 24)), '2024-01-01').primaryEndpoints.table]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('storage{0}', uniqueString(resourceGroup().id)), 24)]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Storage/storageAccounts', take(format('storage{0}',
+uniqueString(resourceGroup().id)), 24))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-api-identity",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "13863639374871732110"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2024-11-30",
+              "name": "[take(format('workvista_api_identity-{0}', uniqueString(resourceGroup().id)), 128)]",
+              "location": "[parameters('location')]"
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', take(format('workvista_api_identity-{0}',
+uniqueString(resourceGroup().id)), 128))]"
+            },
+            "clientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_api_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').clientId]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_api_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').principalId]"
+            },
+            "principalName": {
+              "type": "string",
+              "value": "[take(format('workvista_api_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('workvista_api_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-api-roles-redis-kv",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "redis_kv_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv'), '2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "8388223607954351104"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "redis_kv_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.KeyVault/vaults', parameters('redis_kv_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.KeyVault/vaults', parameters('redis_kv_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'4633458b-17de-408a-b874-0445c86b69e6'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-api-roles-sql",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "principalName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity'),
+'2025-04-01').outputs.principalName.value]"
+          },
+          "sql_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'), '2025-04-01').outputs.name.value]"
+          },
+          "sql_outputs_sqlserveradminname": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'),
+'2025-04-01').outputs.sqlServerAdminName.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "18240856978284048675"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "sql_outputs_name": {
+              "type": "string"
+            },
+            "sql_outputs_sqlserveradminname": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            },
+            "principalName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2023-08-01",
+              "name": "[take(format('script-{0}', uniqueString('sql', parameters('principalName'), 'WorkVista',
+resourceGroup().id)), 24)]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('sql_outputs_sqlserveradminname')))]": {}
+                }
+              },
+              "kind": "AzurePowerShell",
+              "properties": {
+                "azPowerShellVersion": "14.0",
+                "retentionInterval": "PT1H",
+                "environmentVariables": [
+                  {
+                    "name": "DBNAME",
+                    "value": "WorkVista"
+                  },
+                  {
+                    "name": "DBSERVER",
+                    "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sql_outputs_name')),
+'2023-08-01').fullyQualifiedDomainName]"
+                  },
+                  {
+                    "name": "PRINCIPALTYPE",
+                    "value": "ServicePrincipal"
+                  },
+                  {
+                    "name": "PRINCIPALNAME",
+                    "value": "[parameters('principalName')]"
+                  },
+                  {
+                    "name": "ID",
+                    "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('principalName')), '2024-11-30').clientId]"
+                  }
+                ],
+                "scriptContent": "$sqlServerFqdn = \"$env:DBSERVER\"\r\n$sqlDatabaseName = \"$env:DBNAME\"\r\n$principalName =
+\"$env:PRINCIPALNAME\"\r\n$id = \"$env:ID\"\r\n\r\n# Install SqlServer module - using specific version to avoid breaking changes in
+22.4.5.1 (see https://github.com/microsoft/aspire/issues/9926)\r\nInstall-Module -Name SqlServer -RequiredVersion 22.4.5.1 -Force
+-AllowClobber -Scope CurrentUser\r\nImport-Module SqlServer\r\n\r\n$sqlCmd = @\"\r\nDECLARE @name SYSNAME =
+'$principalName';\r\nDECLARE @id UNIQUEIDENTIFIER = '$id';\r\n\r\n-- Convert the guid to the right type\r\nDECLARE @castId
+NVARCHAR(MAX) = CONVERT(VARCHAR(MAX), CONVERT (VARBINARY(16), @id), 1);\r\n\r\n-- Construct command: CREATE USER [@name] WITH SID =
+@castId, TYPE = E;\r\nDECLARE @cmd NVARCHAR(MAX) = N'CREATE USER [' + @name + '] WITH SID = ' + @castId + ', TYPE = E;'\r\nEXEC
+(@cmd);\r\n\r\n-- Assign roles to the new user\r\nDECLARE @role1 NVARCHAR(MAX) = N'ALTER ROLE db_owner ADD MEMBER [' + @name +
+']';\r\nEXEC (@role1);\r\n\r\n\"@\r\n# Note: the string terminator must not have whitespace before it, therefore it is not
+indented.\r\n\r\nWrite-Host $sqlCmd\r\n\r\n$connectionString = \"Server=tcp:${sqlServerFqdn},1433;Initial
+Catalog=${sqlDatabaseName};Authentication=<redacted> Directory Default;\"\r\n\r\n$maxRetries = 5\r\n$retryDelay = 60\r\n$attempt =
+0\r\n$success = $false\r\n\r\nwhile (-not $success -and $attempt -lt $maxRetries) {\r\n    $attempt++\r\n    Write-Host \"Attempt
+$attempt of $maxRetries...\"\r\n    try {\r\n        Invoke-Sqlcmd -ConnectionString $connectionString -Query $sqlCmd\r\n
+$success = $true\r\n        Write-Host \"SQL command succeeded on attempt $attempt.\"\r\n    } catch {\r\n        Write-Host
+\"Attempt $attempt failed: $_\"\r\n        if ($attempt -lt $maxRetries) {\r\n            Write-Host \"Retrying in $retryDelay
+seconds...\"\r\n            Start-Sleep -Seconds $retryDelay\r\n        } else {\r\n            throw\r\n        }\r\n    }\r\n}"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-api-roles-storage",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "storage_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage'), '2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "3055400804934435575"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "storage_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-consumer-identity",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "11353865569007111892"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2024-11-30",
+              "name": "[take(format('workvista_consumer_identity-{0}', uniqueString(resourceGroup().id)), 128)]",
+              "location": "[parameters('location')]"
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_consumer_identity-{0}', uniqueString(resourceGroup().id)), 128))]"
+            },
+            "clientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_consumer_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').clientId]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_consumer_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').principalId]"
+            },
+            "principalName": {
+              "type": "string",
+              "value": "[take(format('workvista_consumer_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('workvista_consumer_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-consumer-roles-rawstorage",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "rawstorage_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'rawstorage'),
+'2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "11895547741279844402"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "rawstorage_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'rawstorage')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-consumer-roles-redis-kv",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "redis_kv_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv'), '2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "8388223607954351104"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "redis_kv_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.KeyVault/vaults', parameters('redis_kv_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.KeyVault/vaults', parameters('redis_kv_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'4633458b-17de-408a-b874-0445c86b69e6'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-consumer-roles-sql",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "principalName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity'),
+'2025-04-01').outputs.principalName.value]"
+          },
+          "sql_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'), '2025-04-01').outputs.name.value]"
+          },
+          "sql_outputs_sqlserveradminname": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'),
+'2025-04-01').outputs.sqlServerAdminName.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "18240856978284048675"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "sql_outputs_name": {
+              "type": "string"
+            },
+            "sql_outputs_sqlserveradminname": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            },
+            "principalName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2023-08-01",
+              "name": "[take(format('script-{0}', uniqueString('sql', parameters('principalName'), 'WorkVista',
+resourceGroup().id)), 24)]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('sql_outputs_sqlserveradminname')))]": {}
+                }
+              },
+              "kind": "AzurePowerShell",
+              "properties": {
+                "azPowerShellVersion": "14.0",
+                "retentionInterval": "PT1H",
+                "environmentVariables": [
+                  {
+                    "name": "DBNAME",
+                    "value": "WorkVista"
+                  },
+                  {
+                    "name": "DBSERVER",
+                    "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sql_outputs_name')),
+'2023-08-01').fullyQualifiedDomainName]"
+                  },
+                  {
+                    "name": "PRINCIPALTYPE",
+                    "value": "ServicePrincipal"
+                  },
+                  {
+                    "name": "PRINCIPALNAME",
+                    "value": "[parameters('principalName')]"
+                  },
+                  {
+                    "name": "ID",
+                    "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('principalName')), '2024-11-30').clientId]"
+                  }
+                ],
+                "scriptContent": "$sqlServerFqdn = \"$env:DBSERVER\"\r\n$sqlDatabaseName = \"$env:DBNAME\"\r\n$principalName =
+\"$env:PRINCIPALNAME\"\r\n$id = \"$env:ID\"\r\n\r\n# Install SqlServer module - using specific version to avoid breaking changes in
+22.4.5.1 (see https://github.com/microsoft/aspire/issues/9926)\r\nInstall-Module -Name SqlServer -RequiredVersion 22.4.5.1 -Force
+-AllowClobber -Scope CurrentUser\r\nImport-Module SqlServer\r\n\r\n$sqlCmd = @\"\r\nDECLARE @name SYSNAME =
+'$principalName';\r\nDECLARE @id UNIQUEIDENTIFIER = '$id';\r\n\r\n-- Convert the guid to the right type\r\nDECLARE @castId
+NVARCHAR(MAX) = CONVERT(VARCHAR(MAX), CONVERT (VARBINARY(16), @id), 1);\r\n\r\n-- Construct command: CREATE USER [@name] WITH SID =
+@castId, TYPE = E;\r\nDECLARE @cmd NVARCHAR(MAX) = N'CREATE USER [' + @name + '] WITH SID = ' + @castId + ', TYPE = E;'\r\nEXEC
+(@cmd);\r\n\r\n-- Assign roles to the new user\r\nDECLARE @role1 NVARCHAR(MAX) = N'ALTER ROLE db_owner ADD MEMBER [' + @name +
+']';\r\nEXEC (@role1);\r\n\r\n\"@\r\n# Note: the string terminator must not have whitespace before it, therefore it is not
+indented.\r\n\r\nWrite-Host $sqlCmd\r\n\r\n$connectionString = \"Server=tcp:${sqlServerFqdn},1433;Initial
+Catalog=${sqlDatabaseName};Authentication=<redacted> Directory Default;\"\r\n\r\n$maxRetries = 5\r\n$retryDelay = 60\r\n$attempt =
+0\r\n$success = $false\r\n\r\nwhile (-not $success -and $attempt -lt $maxRetries) {\r\n    $attempt++\r\n    Write-Host \"Attempt
+$attempt of $maxRetries...\"\r\n    try {\r\n        Invoke-Sqlcmd -ConnectionString $connectionString -Query $sqlCmd\r\n
+$success = $true\r\n        Write-Host \"SQL command succeeded on attempt $attempt.\"\r\n    } catch {\r\n        Write-Host
+\"Attempt $attempt failed: $_\"\r\n        if ($attempt -lt $maxRetries) {\r\n            Write-Host \"Retrying in $retryDelay
+seconds...\"\r\n            Start-Sleep -Seconds $retryDelay\r\n        } else {\r\n            throw\r\n        }\r\n    }\r\n}"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-consumer-roles-storage",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "storage_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage'), '2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "3055400804934435575"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "storage_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-migration-identity",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "9490217829159552610"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2024-11-30",
+              "name": "[take(format('workvista_migration_identity-{0}', uniqueString(resourceGroup().id)), 128)]",
+              "location": "[parameters('location')]"
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_migration_identity-{0}', uniqueString(resourceGroup().id)), 128))]"
+            },
+            "clientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_migration_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').clientId]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_migration_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').principalId]"
+            },
+            "principalName": {
+              "type": "string",
+              "value": "[take(format('workvista_migration_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('workvista_migration_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-migration-roles-sql",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-migration-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "principalName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-migration-identity'),
+'2025-04-01').outputs.principalName.value]"
+          },
+          "sql_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'), '2025-04-01').outputs.name.value]"
+          },
+          "sql_outputs_sqlserveradminname": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'),
+'2025-04-01').outputs.sqlServerAdminName.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "18240856978284048675"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "sql_outputs_name": {
+              "type": "string"
+            },
+            "sql_outputs_sqlserveradminname": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            },
+            "principalName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2023-08-01",
+              "name": "[take(format('script-{0}', uniqueString('sql', parameters('principalName'), 'WorkVista',
+resourceGroup().id)), 24)]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('sql_outputs_sqlserveradminname')))]": {}
+                }
+              },
+              "kind": "AzurePowerShell",
+              "properties": {
+                "azPowerShellVersion": "14.0",
+                "retentionInterval": "PT1H",
+                "environmentVariables": [
+                  {
+                    "name": "DBNAME",
+                    "value": "WorkVista"
+                  },
+                  {
+                    "name": "DBSERVER",
+                    "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sql_outputs_name')),
+'2023-08-01').fullyQualifiedDomainName]"
+                  },
+                  {
+                    "name": "PRINCIPALTYPE",
+                    "value": "ServicePrincipal"
+                  },
+                  {
+                    "name": "PRINCIPALNAME",
+                    "value": "[parameters('principalName')]"
+                  },
+                  {
+                    "name": "ID",
+                    "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('principalName')), '2024-11-30').clientId]"
+                  }
+                ],
+                "scriptContent": "$sqlServerFqdn = \"$env:DBSERVER\"\r\n$sqlDatabaseName = \"$env:DBNAME\"\r\n$principalName =
+\"$env:PRINCIPALNAME\"\r\n$id = \"$env:ID\"\r\n\r\n# Install SqlServer module - using specific version to avoid breaking changes in
+22.4.5.1 (see https://github.com/microsoft/aspire/issues/9926)\r\nInstall-Module -Name SqlServer -RequiredVersion 22.4.5.1 -Force
+-AllowClobber -Scope CurrentUser\r\nImport-Module SqlServer\r\n\r\n$sqlCmd = @\"\r\nDECLARE @name SYSNAME =
+'$principalName';\r\nDECLARE @id UNIQUEIDENTIFIER = '$id';\r\n\r\n-- Convert the guid to the right type\r\nDECLARE @castId
+NVARCHAR(MAX) = CONVERT(VARCHAR(MAX), CONVERT (VARBINARY(16), @id), 1);\r\n\r\n-- Construct command: CREATE USER [@name] WITH SID =
+@castId, TYPE = E;\r\nDECLARE @cmd NVARCHAR(MAX) = N'CREATE USER [' + @name + '] WITH SID = ' + @castId + ', TYPE = E;'\r\nEXEC
+(@cmd);\r\n\r\n-- Assign roles to the new user\r\nDECLARE @role1 NVARCHAR(MAX) = N'ALTER ROLE db_owner ADD MEMBER [' + @name +
+']';\r\nEXEC (@role1);\r\n\r\n\"@\r\n# Note: the string terminator must not have whitespace before it, therefore it is not
+indented.\r\n\r\nWrite-Host $sqlCmd\r\n\r\n$connectionString = \"Server=tcp:${sqlServerFqdn},1433;Initial
+Catalog=${sqlDatabaseName};Authentication=<redacted> Directory Default;\"\r\n\r\n$maxRetries = 5\r\n$retryDelay = 60\r\n$attempt =
+0\r\n$success = $false\r\n\r\nwhile (-not $success -and $attempt -lt $maxRetries) {\r\n    $attempt++\r\n    Write-Host \"Attempt
+$attempt of $maxRetries...\"\r\n    try {\r\n        Invoke-Sqlcmd -ConnectionString $connectionString -Query $sqlCmd\r\n
+$success = $true\r\n        Write-Host \"SQL command succeeded on attempt $attempt.\"\r\n    } catch {\r\n        Write-Host
+\"Attempt $attempt failed: $_\"\r\n        if ($attempt -lt $maxRetries) {\r\n            Write-Host \"Retrying in $retryDelay
+seconds...\"\r\n            Start-Sleep -Seconds $retryDelay\r\n        } else {\r\n            throw\r\n        }\r\n    }\r\n}"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-migration-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-processor-identity",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "16312374988072094890"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2024-11-30",
+              "name": "[take(format('workvista_processor_identity-{0}', uniqueString(resourceGroup().id)), 128)]",
+              "location": "[parameters('location')]"
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_processor_identity-{0}', uniqueString(resourceGroup().id)), 128))]"
+            },
+            "clientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_processor_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').clientId]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+take(format('workvista_processor_identity-{0}', uniqueString(resourceGroup().id)), 128)), '2024-11-30').principalId]"
+            },
+            "principalName": {
+              "type": "string",
+              "value": "[take(format('workvista_processor_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[take(format('workvista_processor_identity-{0}', uniqueString(resourceGroup().id)), 128)]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-processor-roles-rawstorage",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "rawstorage_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'rawstorage'),
+'2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "11895547741279844402"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "rawstorage_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('rawstorage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'rawstorage')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-processor-roles-redis-kv",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "redis_kv_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv'), '2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "8388223607954351104"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "redis_kv_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.KeyVault/vaults', parameters('redis_kv_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.KeyVault/vaults', parameters('redis_kv_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'4633458b-17de-408a-b874-0445c86b69e6'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-processor-roles-sql",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "principalName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity'),
+'2025-04-01').outputs.principalName.value]"
+          },
+          "sql_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'), '2025-04-01').outputs.name.value]"
+          },
+          "sql_outputs_sqlserveradminname": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'),
+'2025-04-01').outputs.sqlServerAdminName.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "18240856978284048675"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "sql_outputs_name": {
+              "type": "string"
+            },
+            "sql_outputs_sqlserveradminname": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            },
+            "principalName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2023-08-01",
+              "name": "[take(format('script-{0}', uniqueString('sql', parameters('principalName'), 'WorkVista',
+resourceGroup().id)), 24)]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('sql_outputs_sqlserveradminname')))]": {}
+                }
+              },
+              "kind": "AzurePowerShell",
+              "properties": {
+                "azPowerShellVersion": "14.0",
+                "retentionInterval": "PT1H",
+                "environmentVariables": [
+                  {
+                    "name": "DBNAME",
+                    "value": "WorkVista"
+                  },
+                  {
+                    "name": "DBSERVER",
+                    "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sql_outputs_name')),
+'2023-08-01').fullyQualifiedDomainName]"
+                  },
+                  {
+                    "name": "PRINCIPALTYPE",
+                    "value": "ServicePrincipal"
+                  },
+                  {
+                    "name": "PRINCIPALNAME",
+                    "value": "[parameters('principalName')]"
+                  },
+                  {
+                    "name": "ID",
+                    "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',
+parameters('principalName')), '2024-11-30').clientId]"
+                  }
+                ],
+                "scriptContent": "$sqlServerFqdn = \"$env:DBSERVER\"\r\n$sqlDatabaseName = \"$env:DBNAME\"\r\n$principalName =
+\"$env:PRINCIPALNAME\"\r\n$id = \"$env:ID\"\r\n\r\n# Install SqlServer module - using specific version to avoid breaking changes in
+22.4.5.1 (see https://github.com/microsoft/aspire/issues/9926)\r\nInstall-Module -Name SqlServer -RequiredVersion 22.4.5.1 -Force
+-AllowClobber -Scope CurrentUser\r\nImport-Module SqlServer\r\n\r\n$sqlCmd = @\"\r\nDECLARE @name SYSNAME =
+'$principalName';\r\nDECLARE @id UNIQUEIDENTIFIER = '$id';\r\n\r\n-- Convert the guid to the right type\r\nDECLARE @castId
+NVARCHAR(MAX) = CONVERT(VARCHAR(MAX), CONVERT (VARBINARY(16), @id), 1);\r\n\r\n-- Construct command: CREATE USER [@name] WITH SID =
+@castId, TYPE = E;\r\nDECLARE @cmd NVARCHAR(MAX) = N'CREATE USER [' + @name + '] WITH SID = ' + @castId + ', TYPE = E;'\r\nEXEC
+(@cmd);\r\n\r\n-- Assign roles to the new user\r\nDECLARE @role1 NVARCHAR(MAX) = N'ALTER ROLE db_owner ADD MEMBER [' + @name +
+']';\r\nEXEC (@role1);\r\n\r\n\"@\r\n# Note: the string terminator must not have whitespace before it, therefore it is not
+indented.\r\n\r\nWrite-Host $sqlCmd\r\n\r\n$connectionString = \"Server=tcp:${sqlServerFqdn},1433;Initial
+Catalog=${sqlDatabaseName};Authentication=<redacted> Directory Default;\"\r\n\r\n$maxRetries = 5\r\n$retryDelay = 60\r\n$attempt =
+0\r\n$success = $false\r\n\r\nwhile (-not $success -and $attempt -lt $maxRetries) {\r\n    $attempt++\r\n    Write-Host \"Attempt
+$attempt of $maxRetries...\"\r\n    try {\r\n        Invoke-Sqlcmd -ConnectionString $connectionString -Query $sqlCmd\r\n
+$success = $true\r\n        Write-Host \"SQL command succeeded on attempt $attempt.\"\r\n    } catch {\r\n        Write-Host
+\"Attempt $attempt failed: $_\"\r\n        if ($attempt -lt $maxRetries) {\r\n            Write-Host \"Retrying in $retryDelay
+seconds...\"\r\n            Start-Sleep -Seconds $retryDelay\r\n        } else {\r\n            throw\r\n        }\r\n    }\r\n}"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workvista-processor-roles-storage",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "principalId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity'),
+'2025-04-01').outputs.principalId.value]"
+          },
+          "storage_outputs_name": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage'), '2025-04-01').outputs.name.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.45.15.27210",
+              "templateHash": "3055400804934435575"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location for the resource(s) to be deployed."
+              }
+            },
+            "storage_outputs_name": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name'))]",
+              "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storage_outputs_name')),
+parameters('principalId'), subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88'))]",
+              "properties": {
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions',
+'974c5e8b-45b9-4653-ba55-5f855dd0fb88')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}',
+parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "APPINSIGHTS_APPINSIGHTSCONNECTIONSTRING": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'appinsights'),
+'2025-04-01').outputs.appInsightsConnectionString.value]"
+    },
+    "AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment'),
+'2025-04-01').outputs.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN.value]"
+    },
+    "AZURE_CONTAINER_REGISTRY_ENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment'),
+'2025-04-01').outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT.value]"
+    },
+    "CONTAINER_ENVIRONMENT_AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment'),
+'2025-04-01').outputs.AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN.value]"
+    },
+    "CONTAINER_ENVIRONMENT_AZURE_CONTAINER_APPS_ENVIRONMENT_ID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment'),
+'2025-04-01').outputs.AZURE_CONTAINER_APPS_ENVIRONMENT_ID.value]"
+    },
+    "CONTAINER_ENVIRONMENT_AZURE_CONTAINER_REGISTRY_ENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment'),
+'2025-04-01').outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT.value]"
+    },
+    "CONTAINER_ENVIRONMENT_AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-environment'),
+'2025-04-01').outputs.AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID.value]"
+    },
+    "RAWSTORAGE_DATALAKEENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'rawstorage'),
+'2025-04-01').outputs.dataLakeEndpoint.value]"
+    },
+    "REDIS_KV_NAME": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv'), '2025-04-01').outputs.name.value]"
+    },
+    "REDIS_KV_VAULTURI": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis-kv'),
+'2025-04-01').outputs.vaultUri.value]"
+    },
+    "REDIS_HOSTNAME": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'redis'),
+'2025-04-01').outputs.hostName.value]"
+    },
+    "SQL_SQLSERVERFQDN": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'sql'),
+'2025-04-01').outputs.sqlServerFqdn.value]"
+    },
+    "STORAGE_BLOBENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage'),
+'2025-04-01').outputs.blobEndpoint.value]"
+    },
+    "STORAGE_QUEUEENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage'),
+'2025-04-01').outputs.queueEndpoint.value]"
+    },
+    "STORAGE_TABLEENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'storage'),
+'2025-04-01').outputs.tableEndpoint.value]"
+    },
+    "WORKVISTA_API_IDENTITY_CLIENTID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity'),
+'2025-04-01').outputs.clientId.value]"
+    },
+    "WORKVISTA_API_IDENTITY_ID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-api-identity'),
+'2025-04-01').outputs.id.value]"
+    },
+    "WORKVISTA_CONSUMER_IDENTITY_CLIENTID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity'),
+'2025-04-01').outputs.clientId.value]"
+    },
+    "WORKVISTA_CONSUMER_IDENTITY_ID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-consumer-identity'),
+'2025-04-01').outputs.id.value]"
+    },
+    "WORKVISTA_MIGRATION_IDENTITY_CLIENTID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-migration-identity'),
+'2025-04-01').outputs.clientId.value]"
+    },
+    "WORKVISTA_MIGRATION_IDENTITY_ID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-migration-identity'),
+'2025-04-01').outputs.id.value]"
+    },
+    "WORKVISTA_PROCESSOR_IDENTITY_CLIENTID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity'),
+'2025-04-01').outputs.clientId.value]"
+    },
+    "WORKVISTA_PROCESSOR_IDENTITY_ID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId,
+format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'workvista-processor-identity'),
+'2025-04-01').outputs.id.value]"
+    }
+  }
+}
+-------------------------------------stderr-------------------------------------------
+C:\WorkVista_Repos\infra\workvista-api-roles-sql\workvista-api-roles-sql.module.bicep(8,7) : Warning no-unused-params: Parameter
+"principalId" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-migration-roles-sql\workvista-migration-roles-sql.module.bicep(8,7) : Warning no-unused-params:
+Parameter "principalId" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\container-environment\container-environment.module.bicep(4,7) : Warning no-unused-params: Parameter
+"userPrincipalId" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\container-environment\container-environment.module.bicep(8,7) : Warning no-unused-params: Parameter
+"container_environment_acr_outputs_name" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-api-roles-redis-kv\workvista-api-roles-redis-kv.module.bicep(2,7) : Warning no-unused-params:
+Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-processor-roles-storage\workvista-processor-roles-storage.module.bicep(2,7) : Warning
+no-unused-params: Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-processor-roles-sql\workvista-processor-roles-sql.module.bicep(8,7) : Warning no-unused-params:
+Parameter "principalId" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-consumer-roles-rawstorage\workvista-consumer-roles-rawstorage.module.bicep(2,7) : Warning
+no-unused-params: Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-api-roles-storage\workvista-api-roles-storage.module.bicep(2,7) : Warning no-unused-params:
+Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\main.bicep(16,7) : Warning no-unused-params: Parameter "domain" is declared but never used.
+[https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\main.bicep(17,7) : Warning no-unused-params: Parameter "environment" is declared but never used.
+[https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\main.bicep(19,7) : Warning no-unused-params: Parameter "jwt_signing_key" is declared but never used.
+[https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\main.bicep(21,7) : Warning no-unused-params: Parameter "sql_password" is declared but never used.
+[https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-processor-roles-redis-kv\workvista-processor-roles-redis-kv.module.bicep(2,7) : Warning
+no-unused-params: Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-consumer-roles-storage\workvista-consumer-roles-storage.module.bicep(2,7) : Warning
+no-unused-params: Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-processor-roles-rawstorage\workvista-processor-roles-rawstorage.module.bicep(2,7) : Warning
+no-unused-params: Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-consumer-roles-sql\workvista-consumer-roles-sql.module.bicep(8,7) : Warning no-unused-params:
+Parameter "principalId" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+C:\WorkVista_Repos\infra\workvista-consumer-roles-redis-kv\workvista-consumer-roles-redis-kv.module.bicep(2,7) : Warning
+no-unused-params: Parameter "location" is declared but never used. [https://aka.ms/bicep/linter-diagnostics#no-unused-params]
+2026/09/22 16:18:04 bicep.go:423: bicep build cache store for C:\WorkVista_Repos\infra\main.bicep
+2026/09/22 16:18:04 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-api'
+2026/09/22 16:18:04 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-api'
+2026/09/22 16:18:04 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-consumer'
+2026/09/22 16:18:04 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-consumer'
+2026/09/22 16:18:04 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-migration'
+2026/09/22 16:18:04 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-migration'
+2026/09/22 16:18:04 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-processor'
+2026/09/22 16:18:04 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-processor'
+2026/09/22 16:18:08 command_runner.go:325: Run exec: 'dotnet --version' , exit code: 0
+Additional env:
+   DOTNET_CLI_WORKLOAD_UPDATE_NOTIFY_DISABLE=<redacted>
+   DOTNET_NOLOGO=<redacted>
+-------------------------------------stdout-------------------------------------------
+10.0.401
+2026/09/22 16:18:08 dotnet.go:81: dotnet version: 10.0.401
+
+Provisioning and deploying (azd up)
+Packaging overlaps with provisioning for faster execution.
+
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting cmdhook-prepackage
+2026/09/22 16:18:08 up_graph.go:898: up-graph: cmdhook-prepackage completed
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting cmdhook-preprovision
+2026/09/22 16:18:08 up_graph.go:898: up-graph: cmdhook-preprovision completed
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting provision
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting event-prepackage
+2026/09/22 16:18:08 up_graph.go:898: up-graph: event-prepackage completed
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting package-workvista-processor
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting package-workvista-consumer
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting package-workvista-migration
+  workvista-processor: Packaging
+  workvista-consumer: Packaging
+  workvista-migration: Packaging
+2026/09/22 16:18:08 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-processor'
+2026/09/22 16:18:08 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-processor'
+2026/09/22 16:18:08 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-consumer'
+2026/09/22 16:18:08 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-consumer'
+2026/09/22 16:18:08 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-migration'
+2026/09/22 16:18:08 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-migration'
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting package-workvista-api
+  workvista-api: Packaging
+2026/09/22 16:18:08 service_manager.go:703: Attempting to resolve language 'dotnet' for service 'workvista-api'
+2026/09/22 16:18:08 service_manager.go:722: Successfully resolved language 'dotnet' for service 'workvista-api'
+Initialize bicep provider
+2026/09/22 16:18:08 up_graph.go:898: up-graph: package-workvista-consumer completed
+2026/09/22 16:18:08 up_graph.go:898: up-graph: package-workvista-migration completed
+2026/09/22 16:18:08 up_graph.go:898: up-graph: package-workvista-api completed
+2026/09/22 16:18:08 up_graph.go:898: up-graph: package-workvista-processor completed
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting event-postpackage
+2026/09/22 16:18:08 up_graph.go:898: up-graph: event-postpackage completed
+2026/09/22 16:18:08 up_graph.go:893: up-graph: starting cmdhook-postpackage
+2026/09/22 16:18:08 up_graph.go:898: up-graph: cmdhook-postpackage completed
+2026/09/22 16:18:08 bicep.go:396: bicep build cache hit for C:\WorkVista_Repos\infra\main.bicep
+Creating a deployment plan
+Comparing deployment state
+2026/09/22 16:18:08 main.go:51: Retry: =====> Try=1 for GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a0
+5011f2b/providers/Microsoft.Resources/deployments/?api-version=2021-04-01
+2026/09/22 16:18:08 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/providers/Microsoft.Resources/deployments/?ap
+i-version=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+2026/09/22 16:18:13 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/4.8749033s, OpTime=4.8749033s) -- RESPONSE RECEIVED
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/providers/Microsoft.Resources/deployments/?ap
+i-version=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Cache-Control: no-cache
+   Content-Length: 5224863
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:12 GMT
+   Expires: -1
+   Pragma: no-cache
+   Strict-Transport-Security: REDACTED
+   X-Cache: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   X-Ms-Ratelimit-Remaining-Subscription-Global-Reads: REDACTED
+   X-Ms-Ratelimit-Remaining-Subscription-Reads: REDACTED
+   X-Ms-Request-Id: 5cdec7b8-6488-43bf-8d01-3fa47d99a1f5
+   X-Ms-Routing-Request-Id: REDACTED
+   X-Msedge-Ref: REDACTED
+2026/09/22 16:18:13 main.go:51: Retry: response 200
+2026/09/22 16:18:13 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:14 deployment_manager.go:124: completedDeployments: matched deployment 'wv-ci-stg-1788522760' using layerName:
+2026/09/22 16:18:14 main.go:51: Retry: =====> Try=1 for POST
+https://management.azure.com/providers/Microsoft.Resources/calculateTemplateHash?api-version=2021-04-01
+2026/09/22 16:18:14 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   POST https://management.azure.com/providers/Microsoft.Resources/calculateTemplateHash?api-version=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   Content-Length: 90183
+   Content-Type: application/json
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+2026/09/22 16:18:14 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/232.7353ms, OpTime=232.7353ms) -- RESPONSE RECEIVED
+   POST https://management.azure.com/providers/Microsoft.Resources/calculateTemplateHash?api-version=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   Content-Length: 90183
+   Content-Type: application/json
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Cache-Control: no-cache
+   Content-Length: 95992
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:14 GMT
+   Expires: -1
+   Pragma: no-cache
+   Strict-Transport-Security: REDACTED
+   X-Cache: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   X-Ms-Ratelimit-Remaining-Tenant-Writes: REDACTED
+   X-Ms-Request-Id: 01e361ad-e560-4fab-94b7-f42bf9034e8a
+   X-Ms-Routing-Request-Id: REDACTED
+   X-Msedge-Ref: REDACTED
+2026/09/22 16:18:14 main.go:51: Retry: response 200
+2026/09/22 16:18:14 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:14 bicep_provider.go:807: deployment-state:  : Previous deployment state is equal to current deployment.
+Deployment can be skipped.
+2026/09/22 16:18:14 main.go:51: Retry: =====> Try=1 for HEAD
+https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourceGroups/rg-wv-ci-stg?api-version=2025-03-01
+2026/09/22 16:18:14 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   HEAD
+https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourceGroups/rg-wv-ci-stg?api-version=2025-03-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+2026/09/22 16:18:15 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/217.4197ms, OpTime=217.4197ms) -- RESPONSE RECEIVED
+   HEAD
+https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourceGroups/rg-wv-ci-stg?api-version=2025-03-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 204 No Content
+   Cache-Control: no-cache
+   Content-Length: 0
+   Date: Tue, 22 Sep 2026 10:48:14 GMT
+   Expires: -1
+   Pragma: no-cache
+   Strict-Transport-Security: REDACTED
+   X-Cache: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   X-Ms-Ratelimit-Remaining-Subscription-Global-Reads: REDACTED
+   X-Ms-Ratelimit-Remaining-Subscription-Reads: REDACTED
+   X-Ms-Request-Id: dc332567-3248-460f-b7e9-7efb0d59e60f
+   X-Ms-Routing-Request-Id: REDACTED
+   X-Msedge-Ref: REDACTED
+2026/09/22 16:18:15 main.go:51: Retry: response 204
+2026/09/22 16:18:15 main.go:51: Retry: exit due to non-retriable status code
+  (-) Skipped: Didn't find new changes.
+2026/09/22 16:18:15 up_graph.go:898: up-graph: provision completed
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting cmdhook-postprovision
+2026/09/22 16:18:15 up_graph.go:898: up-graph: cmdhook-postprovision completed
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting cmdhook-predeploy
+2026/09/22 16:18:15 up_graph.go:898: up-graph: cmdhook-predeploy completed
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting event-predeploy
+2026/09/22 16:18:15 up_graph.go:898: up-graph: event-predeploy completed
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting publish-workvista-consumer
+  workvista-consumer: Publishing
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting publish-workvista-migration
+  workvista-migration: Publishing
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting publish-workvista-processor
+  workvista-processor: Publishing
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting publish-workvista-api
+  workvista-api: Publishing
+2026/09/22 16:18:15 service_manager.go:870: resolving target resource for service "workvista-consumer" (no cache hit)
+2026/09/22 16:18:15 service_manager.go:870: resolving target resource for service "workvista-processor" (no cache hit)
+2026/09/22 16:18:15 service_manager.go:870: resolving target resource for service "workvista-migration" (no cache hit)
+2026/09/22 16:18:15 service_manager.go:870: resolving target resource for service "workvista-api" (no cache hit)
+2026/09/22 16:18:15 resource_manager.go:100: AZURE_RESOURCE_GROUP not set; searching Azure for environment "wv-ci-stg" resource
+group
+2026/09/22 16:18:15 resource_manager.go:100: AZURE_RESOURCE_GROUP not set; searching Azure for environment "wv-ci-stg" resource
+group
+2026/09/22 16:18:15 resource_manager.go:100: AZURE_RESOURCE_GROUP not set; searching Azure for environment "wv-ci-stg" resource
+group
+2026/09/22 16:18:15 resource_manager.go:100: AZURE_RESOURCE_GROUP not set; searching Azure for environment "wv-ci-stg" resource
+group
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a0
+5011f2b/resourcegroups?%24filter=REDACTED&api-version=2021-04-01
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a0
+5011f2b/resourcegroups?%24filter=REDACTED&api-version=2021-04-01
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a0
+5011f2b/resourcegroups?%24filter=REDACTED&api-version=2021-04-01
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a0
+5011f2b/resourcegroups?%24filter=REDACTED&api-version=2021-04-01
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+2026/09/22 16:18:15 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/452.1898ms, OpTime=452.1898ms) -- RESPONSE RECEIVED
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Cache-Control: no-cache
+   Content-Length: 275
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:15 GMT
+   Expires: -1
+   Pragma: no-cache
+   Strict-Transport-Security: REDACTED
+   X-Cache: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   X-Ms-Ratelimit-Remaining-Subscription-Global-Reads: REDACTED
+   X-Ms-Ratelimit-Remaining-Subscription-Reads: REDACTED
+   X-Ms-Request-Id: a091467c-5b9f-442e-93eb-e9fd813f7748
+   X-Ms-Routing-Request-Id: REDACTED
+   X-Msedge-Ref: REDACTED
+2026/09/22 16:18:15 main.go:51: Retry: response 200
+2026/09/22 16:18:15 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:15 resource_manager.go:109: found resource group "rg-wv-ci-stg" for environment "wv-ci-stg"
+2026/09/22 16:18:15 service_manager.go:880: target resource resolved for service "workvista-api": rg=rg-wv-ci-stg name=
+2026/09/22 16:18:15 up_graph.go:898: up-graph: publish-workvista-api completed
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting deploy-workvista-api
+  workvista-api: Deploying
+  workvista-api: Deploying (Pushing container image)
+  workvista-api: Deploying (Logging in to registry)
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:15 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/511.9252ms, OpTime=511.9252ms) -- RESPONSE RECEIVED
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Cache-Control: no-cache
+   Content-Length: 275
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:15 GMT
+   Expires: -1
+   Pragma: no-cache
+   Strict-Transport-Security: REDACTED
+   X-Cache: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   X-Ms-Ratelimit-Remaining-Subscription-Global-Reads: REDACTED
+   X-Ms-Ratelimit-Remaining-Subscription-Reads: REDACTED
+   X-Ms-Request-Id: dcd9cfce-a520-460b-b334-4b58e62660f7
+   X-Ms-Routing-Request-Id: REDACTED
+   X-Msedge-Ref: REDACTED
+2026/09/22 16:18:15 main.go:51: Retry: response 200
+2026/09/22 16:18:15 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:15 resource_manager.go:109: found resource group "rg-wv-ci-stg" for environment "wv-ci-stg"
+2026/09/22 16:18:15 service_manager.go:880: target resource resolved for service "workvista-consumer": rg=rg-wv-ci-stg name=
+2026/09/22 16:18:15 up_graph.go:898: up-graph: publish-workvista-consumer completed
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting deploy-workvista-consumer
+  workvista-consumer: Deploying
+  workvista-consumer: Deploying (Pushing container image)
+  workvista-consumer: Deploying (Logging in to registry)
+2026/09/22 16:18:15 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/540.1515ms, OpTime=540.1515ms) -- RESPONSE RECEIVED
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Cache-Control: no-cache
+   Content-Length: 275
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:15 GMT
+   Expires: -1
+   Pragma: no-cache
+   Strict-Transport-Security: REDACTED
+   X-Cache: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   X-Ms-Ratelimit-Remaining-Subscription-Global-Reads: REDACTED
+   X-Ms-Ratelimit-Remaining-Subscription-Reads: REDACTED
+   X-Ms-Request-Id: d0a855cf-58f9-43e9-b2a1-53deaf834d45
+   X-Ms-Routing-Request-Id: REDACTED
+   X-Msedge-Ref: REDACTED
+2026/09/22 16:18:15 main.go:51: Retry: response 200
+2026/09/22 16:18:15 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:15 resource_manager.go:109: found resource group "rg-wv-ci-stg" for environment "wv-ci-stg"
+2026/09/22 16:18:15 service_manager.go:880: target resource resolved for service "workvista-migration": rg=rg-wv-ci-stg name=
+2026/09/22 16:18:15 up_graph.go:898: up-graph: publish-workvista-migration completed
+  workvista-migration: Deploying
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting deploy-workvista-migration
+  workvista-migration: Deploying (Pushing container image)
+  workvista-migration: Deploying (Logging in to registry)
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:15 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/672.4482ms, OpTime=672.4482ms) -- RESPONSE RECEIVED
+   GET https://management.azure.com/subscriptions/436e3efc-6b76-48e8-9cf5-a24a05011f2b/resourcegroups?%24filter=REDACTED&api-version
+=2021-04-01
+   Accept: application/json
+   Authorization: REDACTED
+   User-Agent: azsdk-go-armresources/v1.2.0 (go1.26.4-X:loopvar; Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Cache-Control: no-cache
+   Content-Length: 275
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:15 GMT
+   Expires: -1
+   Pragma: no-cache
+   Strict-Transport-Security: REDACTED
+   X-Cache: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Correlation-Request-Id: 2d60c635-a3ac-1bc7-0785-632e13fbd07d
+   X-Ms-Ratelimit-Remaining-Subscription-Global-Reads: REDACTED
+   X-Ms-Ratelimit-Remaining-Subscription-Reads: REDACTED
+   X-Ms-Request-Id: b7a51cf6-badf-4ad6-ac77-3429aa695e87
+   X-Ms-Routing-Request-Id: REDACTED
+   X-Msedge-Ref: REDACTED
+2026/09/22 16:18:15 main.go:51: Retry: response 200
+2026/09/22 16:18:15 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:15 resource_manager.go:109: found resource group "rg-wv-ci-stg" for environment "wv-ci-stg"
+  workvista-processor: Deploying
+  workvista-processor: Deploying (Pushing container image)
+2026/09/22 16:18:15 service_manager.go:880: target resource resolved for service "workvista-processor": rg=rg-wv-ci-stg name=
+2026/09/22 16:18:15 up_graph.go:898: up-graph: publish-workvista-processor completed
+2026/09/22 16:18:15 up_graph.go:893: up-graph: starting deploy-workvista-processor
+  workvista-processor: Deploying (Logging in to registry)
+2026/09/22 16:18:15 main.go:51: Retry: =====> Try=1 for POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+2026/09/22 16:18:15 main.go:51: Request: ==> OUTGOING REQUEST (Try=1)
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:16 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/253.1003ms, OpTime=253.1003ms) -- RESPONSE RECEIVED
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Connection: keep-alive
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:16 GMT
+   Server: openresty
+   Strict-Transport-Security: REDACTED
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:16 main.go:51: Retry: response 200
+2026/09/22 16:18:16 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:16 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/387.5287ms, OpTime=387.5287ms) -- RESPONSE RECEIVED
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Connection: keep-alive
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:16 GMT
+   Server: openresty
+   Strict-Transport-Security: REDACTED
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:16 main.go:51: Retry: response 200
+2026/09/22 16:18:16 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:16 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/341.2128ms, OpTime=341.2128ms) -- RESPONSE RECEIVED
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Connection: keep-alive
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:16 GMT
+   Server: openresty
+   Strict-Transport-Security: REDACTED
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:16 main.go:51: Retry: response 200
+2026/09/22 16:18:16 main.go:51: Retry: exit due to non-retriable status code
+2026/09/22 16:18:16 main.go:51: Response: ==> REQUEST/RESPONSE (Try=1/295.199ms, OpTime=295.199ms) -- RESPONSE RECEIVED
+   POST https://acrwemtg4dzsubei.azurecr.io/oauth2/exchange
+   Content-Type: application/x-www-form-urlencoded
+   User-Agent: azsdk-go-azd-acr/1.29.0 (commit fc06de978b9e9dc98a50ebb601a18b0f9f24071a) (go1.26.4-X:loopvar;
+Windows_NT),azdev/1.29.0 (Go go1.26.4-X:loopvar; windows/amd64)
+   X-Ms-Correlation-Request-Id: REDACTED
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 200 OK
+   Connection: keep-alive
+   Content-Type: application/json; charset=utf-8
+   Date: Tue, 22 Sep 2026 10:48:16 GMT
+   Server: openresty
+   Strict-Transport-Security: REDACTED
+   X-Ms-Correlation-Request-Id: REDACTED
+2026/09/22 16:18:16 main.go:51: Retry: response 200
+2026/09/22 16:18:16 main.go:51: Retry: exit due to non-retriable status code
