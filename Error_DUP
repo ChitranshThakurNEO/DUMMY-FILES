@@ -1,0 +1,85 @@
+ fail: Microsoft.EntityFrameworkCore.Update[10000]
+2026-09-24T04:29:32.063927300Z       An exception occurred in the database while saving changes for context type 'WorkVista.Server.DataContext.WorkVistaDbContext'.
+2026-09-24T04:29:32.063937349Z       Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+2026-09-24T04:29:32.063946206Z        ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Cannot insert duplicate key row in object 'dbo.MasterActivityLog' with unique index 'UX_MasterActivityLog_Dedup'. The duplicate key value is (SG375852, 2026-09-23 06:06:05.1679728, 2026-09-23 06:07:55.4984030, 110).
+2026-09-24T04:29:32.063955283Z          at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+2026-09-24T04:29:32.063964319Z          at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+2026-09-24T04:29:32.063972685Z          at Microsoft.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)
+2026-09-24T04:29:32.063980870Z          at Microsoft.Data.SqlClient.SqlDataReader.TryReadInternal(Boolean setTimeout, Boolean& more)
+2026-09-24T04:29:32.063996489Z          at Microsoft.Data.SqlClient.SqlDataReader.ReadAsyncExecute(Task task, Object state)
+2026-09-24T04:29:32.064003422Z          at Microsoft.Data.SqlClient.SqlDataReader.InvokeAsyncCall[T](SqlDataReaderBaseAsyncCallContext`1 context)
+2026-09-24T04:29:32.064010145Z       --- End of stack trace from previous location ---
+2026-09-24T04:29:32.064017268Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064023880Z       ClientConnectionId:9f8524f4-c861-49ae-a0a6-d8a08fc3ea71
+2026-09-24T04:29:32.064030423Z       Error Number:2601,State:1,Class:14
+2026-09-24T04:29:32.064036875Z          --- End of inner exception stack trace ---
+2026-09-24T04:29:32.064043668Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064050169Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064058004Z          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064085185Z          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064095324Z          at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064102317Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064108989Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064116493Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064123987Z          at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064130900Z          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064137543Z          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064145407Z          at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064152520Z          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064163000Z       Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+2026-09-24T04:29:32.064170003Z        ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Cannot insert duplicate key row in object 'dbo.MasterActivityLog' with unique index 'UX_MasterActivityLog_Dedup'. The duplicate key value is (SG375852, 2026-09-23 06:06:05.1679728, 2026-09-23 06:07:55.4984030, 110).
+2026-09-24T04:29:32.064182607Z          at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+2026-09-24T04:29:32.064189169Z          at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+2026-09-24T04:29:32.064196072Z          at Microsoft.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)
+2026-09-24T04:29:32.064203566Z          at Microsoft.Data.SqlClient.SqlDataReader.TryReadInternal(Boolean setTimeout, Boolean& more)
+2026-09-24T04:29:32.064210449Z          at Microsoft.Data.SqlClient.SqlDataReader.ReadAsyncExecute(Task task, Object state)
+2026-09-24T04:29:32.064217091Z          at Microsoft.Data.SqlClient.SqlDataReader.InvokeAsyncCall[T](SqlDataReaderBaseAsyncCallContext`1 context)
+2026-09-24T04:29:32.064223833Z       --- End of stack trace from previous location ---
+2026-09-24T04:29:32.064230276Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064236938Z       ClientConnectionId:9f8524f4-c861-49ae-a0a6-d8a08fc3ea71
+2026-09-24T04:29:32.064243440Z       Error Number:2601,State:1,Class:14
+2026-09-24T04:29:32.064250042Z          --- End of inner exception stack trace ---
+2026-09-24T04:29:32.064256695Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064264529Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064271172Z          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064277945Z          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064284577Z          at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064291069Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064297822Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064304194Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064310826Z          at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064318060Z          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064324521Z          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064336724Z          at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064343347Z          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064358034Z warn: WorkVista.Processor.Services.EmployeeActivityProcessingService[0]
+2026-09-24T04:29:32.064364716Z       Some activity rows in this batch were rejected as duplicates.
+2026-09-24T04:29:32.064371489Z       Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+2026-09-24T04:29:32.064378833Z        ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Cannot insert duplicate key row in object 'dbo.MasterActivityLog' with unique index 'UX_MasterActivityLog_Dedup'. The duplicate key value is (SG375852, 2026-09-23 06:06:05.1679728, 2026-09-23 06:07:55.4984030, 110).
+2026-09-24T04:29:32.064385525Z          at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+2026-09-24T04:29:32.064391987Z          at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+2026-09-24T04:29:32.064398530Z          at Microsoft.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)
+2026-09-24T04:29:32.064405072Z          at Microsoft.Data.SqlClient.SqlDataReader.TryReadInternal(Boolean setTimeout, Boolean& more)
+2026-09-24T04:29:32.064411975Z          at Microsoft.Data.SqlClient.SqlDataReader.ReadAsyncExecute(Task task, Object state)
+2026-09-24T04:29:32.064418857Z          at Microsoft.Data.SqlClient.SqlDataReader.InvokeAsyncCall[T](SqlDataReaderBaseAsyncCallContext`1 context)
+2026-09-24T04:29:32.064425901Z       --- End of stack trace from previous location ---
+2026-09-24T04:29:32.064433475Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064440227Z       ClientConnectionId:9f8524f4-c861-49ae-a0a6-d8a08fc3ea71
+2026-09-24T04:29:32.064446900Z       Error Number:2601,State:1,Class:14
+2026-09-24T04:29:32.064453452Z          --- End of inner exception stack trace ---
+2026-09-24T04:29:32.064459784Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064466606Z          at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064473239Z          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064479831Z          at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064486383Z          at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064493076Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064505509Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064512061Z          at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064518563Z          at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064525306Z          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064532029Z          at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064538671Z          at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064545253Z          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064554521Z          at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-09-24T04:29:32.064561844Z          at WorkVista.Processor.Services.EmployeeActivityProcessingService.ProcessActivityLogsAsync(List`1 activityLogs, List`1 categories, MasterActivityCategory unknownCategory, Dictionary`2 employeeSystems, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 321
+2026-09-24T04:29:32.532743879Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
