@@ -1,0 +1,279 @@
+   /// <summary>
+   /// Sync System Info data to DB
+   /// </summary>
+   /// <param name="systemInfos"></param>
+   /// <param name="cancellationToken"></param>
+   /// <returns></returns>
+   private async Task SyncSystemInfosAsync(
+List<SystemInfoRawRecord> systemInfos,
+CancellationToken cancellationToken)
+   {
+       if (!systemInfos.Any())
+           return;
+
+       await _systemInfoSyncLock.WaitAsync(cancellationToken);
+
+       try
+       {
+           var existingSystems =
+               await _dbContext.MasterEmployeeSystemInfo
+                   .ToListAsync(cancellationToken);
+
+           var existingLookup =
+               existingSystems
+                   .GroupBy(
+                       x => $"{x.UserName?.Trim()}|{x.SystemName?.Trim()}",
+                       StringComparer.OrdinalIgnoreCase)
+                   .ToDictionary(
+                       x => x.Key,
+                       x => x.First(),
+                       StringComparer.OrdinalIgnoreCase);
+
+           /*
+            * Was previously one sp_GetEmployeesDetailsByNTID call PER
+            * systemInfo record (an N+1 round trip - 100+ calls per
+            * run at your current scale). Resolve every NTID in this
+            * batch with a single call instead.
+            */
+
+           var employeesByNtid =
+               await _employeeActivityLogSummaryService
+                   .GetEmployeeDetailsByNTIDsAsync(
+                       systemInfos.Select(x => x.UserName));
+
+           foreach (var systemInfo in systemInfos)
+           {
+               if (string.IsNullOrWhiteSpace(systemInfo.UserName) ||
+                   !employeesByNtid.TryGetValue(
+                       systemInfo.UserName,
+                       out var employee))
+               {
+                   continue;
+               }
+
+               var userName = systemInfo.UserName?.Trim();
+               var systemName = systemInfo.SystemName?.Trim();
+
+               var systemKey = $"{userName}|{systemName}";
+
+               if (existingLookup.TryGetValue(
+                       systemKey,
+                       out var existing))
+               {
+                   existing.EmployeeCode = employee.EmployeeCode;
+                   existing.EmpName = systemInfo.EmpName;
+                   existing.Email = systemInfo.Email;
+                   existing.SystemName = systemName;
+                   existing.Manufacturer = systemInfo.Manufacturer;
+                   existing.Model = systemInfo.Model;
+                   existing.OS = systemInfo.OS;
+                   existing.SerialNumber = systemInfo.SerialNumber;
+                   existing.MachineName = systemInfo.MachineName;
+                   existing.LogDate = systemInfo.LogDate;
+                   existing.ModifiedAt = DateTime.UtcNow;
+
+                   continue;
+               }
+
+               var entity = new MasterEmployeeSystemInfo
+               {
+                   EmployeeCode = employee.EmployeeCode,
+                   UserName = userName,
+                   EmpName = systemInfo.EmpName,
+                   Email = systemInfo.Email,
+                   SystemName = systemName,
+                   Manufacturer = systemInfo.Manufacturer,
+                   Model = systemInfo.Model,
+                   OS = systemInfo.OS,
+                   SerialNumber = systemInfo.SerialNumber,
+                   MachineName = systemInfo.MachineName,
+                   LogDate = systemInfo.LogDate,
+                   IsActive = true,
+                   CreatedAt = DateTime.UtcNow
+               };
+
+               _dbContext.MasterEmployeeSystemInfo.Add(entity);
+
+               // Prevent duplicate records within this execution
+               existingLookup[systemKey] = entity;
+           }
+
+           await _dbContext.SaveChangesAsync(cancellationToken);
+       }
+       finally
+       {
+           _systemInfoSyncLock.Release();
+       }
+   }
+
+
+    /// <summary>
+    /// Batched equivalent of GetEmployeeDetailsByNTIDAsync. Resolves
+    /// every NTID in a single round trip via a table-valued parameter
+    /// instead of one stored-procedure call per NTID.
+    /// </summary>
+    public async Task<Dictionary<string, EmployeeDetailsResponse>>
+GetEmployeeDetailsByNTIDsAsync(
+    IEnumerable<string> ntids)
+    {
+        var result =
+            new Dictionary<string, EmployeeDetailsResponse>(
+                StringComparer.OrdinalIgnoreCase);
+
+        var distinctNtids =
+            (ntids ?? Enumerable.Empty<string>())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+        if (!distinctNtids.Any())
+        {
+            return result;
+        }
+
+        var connection =
+            uow.Context.Database.GetDbConnection();
+
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        var ntidTable = new DataTable();
+
+        ntidTable.Columns.Add(
+            "NTId",
+            typeof(string));
+
+        foreach (var ntid in distinctNtids)
+        {
+            ntidTable.Rows.Add(ntid);
+        }
+
+        using var command =
+            connection.CreateCommand();
+
+        command.CommandText =
+            "sp_GetEmployeesDetailsByNTIDs";
+
+        command.CommandType =
+            CommandType.StoredProcedure;
+
+        command.Parameters.Add(
+            new SqlParameter("@NTIds", SqlDbType.Structured)
+            {
+                TypeName = "dbo.NTIDListType",
+                Value = ntidTable
+            });
+
+        using var reader =
+            await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            var ntid =
+                reader["NTId"]?.ToString()
+                ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(ntid))
+            {
+                continue;
+            }
+
+            result[ntid] =
+                new EmployeeDetailsResponse
+                {
+                    EmployeeCode =
+                        reader["EmployeeCode"]?.ToString()
+                        ?? string.Empty,
+
+                    FullName =
+                        reader["FullName"]?.ToString()
+                        ?? string.Empty,
+
+                    Email =
+                        reader["Email"]?.ToString()
+                        ?? string.Empty,
+
+                    DEPARTMENT =
+                        reader["DEPARTMENT"]?.ToString()
+                        ?? string.Empty
+                };
+        }
+
+        return result;
+    }
+
+
+
+/*
+    Batched replacement for sp_GetEmployeesDetailsByNTID.
+
+    The Processor's SyncSystemInfosAsync was calling
+    sp_GetEmployeesDetailsByNTID once PER user, per run (an N+1 query -
+    100+ round trips every cycle). This adds a table-valued parameter
+    type plus a set-based stored procedure that resolves all NTIDs in a
+    single call, preserving the original's tie-break rule (lowest
+    GLOBAL_ID wins when an NTID matches more than one employee row).
+
+    The original sp_GetEmployeesDetailsByNTID is left untouched -
+    other callers (e.g. GetWeeklyActivitySummaryAsync) still use it for
+    single lookups.
+*/
+
+-- ------------------------------------------------------------------
+-- 1) Table type used to pass a batch of NTIDs in one round trip.
+-- ------------------------------------------------------------------
+IF NOT EXISTS (
+    SELECT 1 FROM sys.types
+    WHERE is_table_type = 1 AND name = 'NTIDListType'
+)
+BEGIN
+    CREATE TYPE dbo.NTIDListType AS TABLE
+    (
+        NTId NVARCHAR(100) NOT NULL PRIMARY KEY
+    );
+END
+GO
+
+-- ------------------------------------------------------------------
+-- 2) Batched lookup. Same join/tie-break logic as
+--    sp_GetEmployeesDetailsByNTID, applied per NTID via ROW_NUMBER
+--    instead of TOP(1) per call.
+-- ------------------------------------------------------------------
+CREATE OR ALTER PROCEDURE [dbo].[sp_GetEmployeesDetailsByNTIDs]
+    @NTIds dbo.NTIDListType READONLY
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    ;WITH Matched AS
+    (
+        SELECT
+            enm.NetworkId AS NTId,
+            me.GLOBAL_ID AS EmployeeCode,
+            me.FullName,
+            me.Email,
+            me.DEPARTMENT,
+            ROW_NUMBER() OVER (
+                PARTITION BY enm.NetworkId
+                ORDER BY me.GLOBAL_ID
+            ) AS rn
+        FROM @NTIds AS n
+        INNER JOIN EmployeeNetworkMapping AS enm
+            ON enm.NetworkId = n.NTId
+        INNER JOIN vw_MasterEmployee AS me
+            ON me.EmployeeCode = enm.EmployeeCode
+            OR me.GLOBAL_ID = enm.EmployeeCode
+    )
+    SELECT
+        NTId,
+        EmployeeCode,
+        FullName,
+        Email,
+        DEPARTMENT
+    FROM Matched
+    WHERE rn = 1;
+END
+GO
