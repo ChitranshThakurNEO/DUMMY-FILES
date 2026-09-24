@@ -1,0 +1,91 @@
+    public async Task<EmployeeDetailsResponse?>
+GetEmployeeDetailsByNTIDAsync(
+    string ntid)
+    {
+        var connection =
+            uow.Context.Database.GetDbConnection();
+
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        using var command =
+            connection.CreateCommand();
+
+        command.CommandText =
+            "sp_GetEmployeesDetailsByNTID";
+
+        command.CommandType =
+            CommandType.StoredProcedure;
+
+        command.Parameters.Add(
+            new SqlParameter(
+                "@NTID",
+                ntid));
+
+        using var reader =
+            await command.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+        {
+            return null;
+        }
+
+        return new EmployeeDetailsResponse
+        {
+            EmployeeCode =
+                reader["EmployeeCode"]?.ToString()
+                ?? string.Empty,
+
+            FullName =
+                reader["FullName"]?.ToString()
+                ?? string.Empty,
+
+            Email =
+                reader["Email"]?.ToString()
+                ?? string.Empty,
+
+            DEPARTMENT =
+                reader["DEPARTMENT"]?.ToString()
+                ?? string.Empty
+
+        };
+    }
+
+
+CREATE PROCEDURE [dbo].[sp_GetEmployeesDetailsByNTID]
+
+    @NTId NVARCHAR(100)
+
+AS
+
+BEGIN
+
+    SET NOCOUNT ON;
+
+
+
+    SELECT TOP (1)
+
+        me.GLOBAL_ID AS EmployeeCode,
+
+        me.FullName,
+
+        me.Email,
+
+        me.DEPARTMENT
+
+    FROM EmployeeNetworkMapping AS enm
+
+    INNER JOIN vw_MasterEmployee AS me
+
+        ON me.EmployeeCode = enm.EmployeeCode
+
+        OR me.GLOBAL_ID = enm.EmployeeCode
+
+    WHERE enm.NetworkId = @NTId
+
+    ORDER BY me.GLOBAL_ID;  
+
+END
