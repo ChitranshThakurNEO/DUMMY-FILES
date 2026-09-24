@@ -1,0 +1,2 @@
+ALTER INDEX UX_MasterActivityLog_Dedup ON dbo.MasterActivityLog
+REBUILD WITH (IGNORE_DUP_KEY = ON);
