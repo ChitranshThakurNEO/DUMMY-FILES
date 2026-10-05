@@ -1,0 +1,83 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using WorkVista.Server.DataContext.Entities;
+
+namespace WorkVista.Server.DataContext.Configurations
+{
+    public class MasterActivityLogConfiguration
+        : IEntityTypeConfiguration<MasterActivityLog>
+    {
+        public void Configure(
+            EntityTypeBuilder<MasterActivityLog> builder)
+        {
+            builder.ToTable(nameof(MasterActivityLog));
+
+            builder.HasKey(x => x.MasterActivityLogId);
+
+            builder.Property(x => x.Status)
+                .HasMaxLength(20)
+                .HasColumnType("nvarchar(20)")
+                .IsRequired();
+
+            builder.Property(x => x.StartTime)
+                .HasColumnType("datetime2")
+                .IsRequired();
+
+            builder.Property(x => x.EndTime)
+                .HasColumnType("datetime2")
+                .IsRequired();
+
+            builder.Property(x => x.DurationSeconds)
+                .HasColumnType("int")
+                .IsRequired();
+
+            builder.Property(x => x.LogDate)
+                .HasColumnType("date")
+                .IsRequired();
+
+            BaseEntityConfiguration.ConfigureBase(builder);
+
+            builder.HasOne(x => x.MasterActivityCategory)
+                .WithMany()
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.CategoryId)
+                .HasDatabaseName("IX_ActivityLog_Category");
+
+            // Existing activity lookup by time range.
+            // Included columns avoid additional table lookups
+            // when checking for duplicate activities.
+            builder.HasIndex(x => x.StartTime)
+                .HasDatabaseName("IX_ActivityLog_StartTime")
+                .IncludeProperties(
+                    x => new
+                    {
+                        x.EmployeeCode,
+                        x.EndTime,
+                        x.DurationSeconds
+                    });
+
+            // Productivity summary filters activities by LogDate.
+            builder.HasIndex(x => x.LogDate)
+                .HasDatabaseName("IX_ActivityLog_LogDate");
+
+            // Defense-in-depth against duplicate inserts (e.g. two
+            // Processor replicas racing on the same source file). This is
+            // the same natural key the Processor already uses for its
+            // in-memory dedup check. IGNORE_DUP_KEY is applied via raw SQL
+            // in the migration (see AddedUniqueIndex_MasterActivityLog_Dedup)
+            // so a colliding insert is silently skipped instead of failing
+            // the whole batch.
+            builder.HasIndex(x => new
+            {
+                x.EmployeeCode,
+                x.StartTime,
+                x.EndTime,
+                x.DurationSeconds
+            })
+                .IsUnique()
+                .HasDatabaseName("UX_MasterActivityLog_Dedup");
+        }
+    }
+}
