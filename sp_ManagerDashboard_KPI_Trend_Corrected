@@ -1,0 +1,378 @@
+CREATE OR ALTER PROCEDURE [dbo].[sp_ManagerDashboard_KPI_Trend]
+(
+    @ManagerEmployeeCode VARCHAR(20),   -- can be EmployeeCode OR GLOBAL_ID
+    @FromDate DATE,
+    @ToDate DATE,
+    @Productive_Hours_Threshold DECIMAL(10,2),
+    @Days_Threshold INT,
+    @WorkMode VARCHAR(20) = NULL
+)
+AS
+BEGIN
+ 
+SET NOCOUNT ON;
+ 
+DECLARE @Days INT = DATEDIFF(DAY, @FromDate, @ToDate) + 1;
+ 
+---------------------------------------------------
+-- Manager identifiers
+--
+-- The input may be an EmployeeCode or a GLOBAL_ID.
+-- We collect every identifier (EmployeeCode + GLOBAL_ID)
+-- of the matching manager. The raw input is always kept,
+-- so the original behaviour is preserved even when the
+-- manager row is not found in the view.
+---------------------------------------------------
+;WITH ManagerKeys AS
+(
+    SELECT CAST(@ManagerEmployeeCode AS VARCHAR(50)) AS KeyValue
+ 
+    UNION
+ 
+    SELECT v.KeyValue
+    FROM vw_MasterEmployee M
+    CROSS APPLY (VALUES
+        (CAST(M.EmployeeCode AS VARCHAR(50))),
+        (CAST(M.GLOBAL_ID    AS VARCHAR(50)))
+    ) v(KeyValue)
+    WHERE M.EmployeeCode = @ManagerEmployeeCode
+       OR CAST(M.GLOBAL_ID AS VARCHAR(50)) = @ManagerEmployeeCode
+),
+ 
+---------------------------------------------------
+-- Direct reports (team leads) of the manager
+-- MANAGER_1 may hold either EmployeeCode or GLOBAL_ID
+---------------------------------------------------
+TeamLeads AS
+(
+    SELECT DISTINCT
+        E.EmployeeCode,
+        CAST(E.GLOBAL_ID AS VARCHAR(50)) AS GlobalId
+    FROM vw_MasterEmployee E
+    WHERE E.MANAGER_1 IN (SELECT KeyValue FROM ManagerKeys)
+      AND (
+            @WorkMode IS NULL
+         OR @WorkMode = ''
+         OR UPPER(ISNULL(E.WORK_MODE,'')) = UPPER(@WorkMode)
+          )
+),
+ 
+---------------------------------------------------
+-- Employees under Manager
+-- (team leads + everyone who reports to a team lead
+--  at any level, matched by EmployeeCode OR GLOBAL_ID)
+---------------------------------------------------
+Employees AS
+(
+    SELECT EmployeeCode
+    FROM TeamLeads
+ 
+    UNION
+ 
+    SELECT DISTINCT E.EmployeeCode
+    FROM vw_MasterEmployee E
+    WHERE EXISTS
+    (
+        SELECT 1
+        FROM TeamLeads TL
+        WHERE TL.EmployeeCode IN
+              (E.MANAGER_1, E.MANAGER_2, E.MANAGER_3, E.MANAGER_4,
+               E.MANAGER_5, E.MANAGER_6, E.MANAGER_7)
+           OR TL.GlobalId IN
+              (E.MANAGER_1, E.MANAGER_2, E.MANAGER_3, E.MANAGER_4,
+               E.MANAGER_5, E.MANAGER_6, E.MANAGER_7)
+    )
+),
+ 
+---------------------------------------------------
+-- Total Associates
+---------------------------------------------------
+SpanOfControlCount AS
+(
+    SELECT COUNT(*) AS SpanOfControlCount
+    FROM Employees
+),
+ 
+---------------------------------------------------
+-- Present Associates
+---------------------------------------------------
+TotalAssociates AS
+(
+    SELECT
+        COUNT(DISTINCT a.EmployeeCode) AS TotalAssociates
+    FROM EmployeeActivityLogSummary a
+    INNER JOIN Employees e
+        ON a.EmployeeCode = e.EmployeeCode
+    WHERE a.LoggedDate BETWEEN @FromDate AND @ToDate
+        AND ISNULL(a.TOT_LOGGEDHOURS,0) > 0
+        AND a.IsActive = 1
+        AND a.IsDelete = 0
+),
+ 
+---------------------------------------------------
+-- PRODUCTIVE HOURS FROM MASTERACTIVITYLOG
+---------------------------------------------------
+ProductiveData AS
+(
+    SELECT
+        mal.EmployeeCode,
+        CAST(mal.LogDate AS DATE) AS LogDate,
+        SUM(
+            CASE
+                WHEN mal.Status = 'Productive'
+                THEN mal.DurationSeconds
+                ELSE 0
+            END
+        ) / 3600.0 AS ProductiveHours
+    FROM MasterActivityLog mal
+    WHERE mal.IsActive = 1
+      AND mal.IsDelete = 0
+    GROUP BY
+        mal.EmployeeCode,
+        CAST(mal.LogDate AS DATE)
+),
+ 
+---------------------------------------------------
+-- CURRENT PRODUCTIVITY
+---------------------------------------------------
+CurrentProd AS
+(
+    SELECT
+        AVG(ProductivityPercent) AS Productive,
+        AVG(ActiveHours)         AS Active,
+        AVG(IdlePercent)         AS Idle
+    FROM
+    (
+        SELECT
+            a.EmployeeCode,
+ 
+            SUM(ISNULL(a.TOT_PRODHOURS,0)) * 100.0
+            / NULLIF(SUM(ISNULL(a.TOT_LOGGEDHOURS,0)),0)
+                AS ProductivityPercent,
+ 
+            AVG(ISNULL(a.TOT_ACTIVEHOURS,0))
+                AS ActiveHours,
+ 
+            SUM(ISNULL(a.TOT_IDLETIME,0)) * 100.0
+            / NULLIF(SUM(ISNULL(a.TOT_LOGGEDHOURS,0)),0)
+                AS IdlePercent
+ 
+        FROM EmployeeActivityLogSummary a
+        INNER JOIN Employees e
+            ON a.EmployeeCode = e.EmployeeCode
+ 
+        WHERE a.LoggedDate BETWEEN @FromDate AND @ToDate
+            AND ISNULL(a.TOT_LOGGEDHOURS,0) > 0
+ 
+        GROUP BY a.EmployeeCode
+    ) X
+),
+ 
+---------------------------------------------------
+-- PREVIOUS PRODUCTIVITY
+---------------------------------------------------
+PrevProd AS
+(
+    SELECT
+        AVG(ProductivityPercent) AS Productive,
+        AVG(ActiveHours)         AS Active,
+        AVG(IdlePercent)         AS Idle
+    FROM
+    (
+        SELECT
+            a.EmployeeCode,
+ 
+            SUM(ISNULL(a.TOT_PRODHOURS,0)) * 100.0
+            / NULLIF(SUM(ISNULL(a.TOT_LOGGEDHOURS,0)),0)
+                AS ProductivityPercent,
+ 
+            AVG(ISNULL(a.TOT_ACTIVEHOURS,0))
+                AS ActiveHours,
+ 
+            SUM(ISNULL(a.TOT_IDLETIME,0)) * 100.0
+            / NULLIF(SUM(ISNULL(a.TOT_LOGGEDHOURS,0)),0)
+                AS IdlePercent
+ 
+        FROM EmployeeActivityLogSummary a
+        INNER JOIN Employees e
+            ON a.EmployeeCode = e.EmployeeCode
+ 
+        WHERE a.LoggedDate BETWEEN DATEADD(DAY,-@Days,@FromDate)
+                               AND DATEADD(DAY,-1,@FromDate)
+            AND ISNULL(a.TOT_LOGGEDHOURS,0) > 0
+ 
+        GROUP BY a.EmployeeCode
+    ) X
+),
+ 
+---------------------------------------------------
+-- CURRENT ATTENDANCE
+---------------------------------------------------
+CurrentAtt AS
+(
+    SELECT
+        ta.TotalAssociates    AS Present,
+        sc.SpanOfControlCount AS Total
+    FROM TotalAssociates ta
+    CROSS JOIN SpanOfControlCount sc
+),
+ 
+---------------------------------------------------
+-- PREVIOUS ATTENDANCE
+---------------------------------------------------
+PrevAtt AS
+(
+    SELECT
+        COUNT(DISTINCT a.EmployeeCode) AS Present,
+        (SELECT SpanOfControlCount
+         FROM SpanOfControlCount) AS Total
+    FROM EmployeeActivityLogSummary a
+    INNER JOIN Employees e
+        ON a.EmployeeCode = e.EmployeeCode
+    WHERE a.LoggedDate BETWEEN DATEADD(DAY,-@Days,@FromDate)
+                           AND DATEADD(DAY,-1,@FromDate)
+        AND ISNULL(a.TOT_LOGGEDHOURS,0) > 0
+        AND a.IsActive = 1
+        AND a.IsDelete = 0
+),
+ 
+---------------------------------------------------
+-- CURRENT RISK ASSOCIATES
+---------------------------------------------------
+RiskAssociates AS
+(
+    SELECT COUNT(*) AS RiskAssociatesCount
+    FROM
+    (
+        SELECT
+            x.EmployeeCode
+        FROM
+        (
+            SELECT
+                a.EmployeeCode,
+                CAST(a.LoggedDate AS DATE) AS LoggedDate,
+                ISNULL(MAX(p.ProductiveHours),0) AS ProductiveHours
+            FROM EmployeeActivityLogSummary a
+            INNER JOIN Employees e
+                ON a.EmployeeCode = e.EmployeeCode
+            LEFT JOIN ProductiveData p
+                ON p.EmployeeCode = e.EmployeeCode
+               AND p.LogDate = CAST(a.LoggedDate AS DATE)
+            WHERE a.LoggedDate BETWEEN @FromDate AND @ToDate
+              AND ISNULL(a.TOT_LOGGEDHOURS,0) > 0
+            GROUP BY
+                a.EmployeeCode,
+                CAST(a.LoggedDate AS DATE)
+        ) x
+        WHERE x.ProductiveHours < @Productive_Hours_Threshold
+        GROUP BY x.EmployeeCode
+        HAVING COUNT(*) >= @Days_Threshold
+    ) y
+),
+ 
+---------------------------------------------------
+-- PREVIOUS RISK ASSOCIATES
+---------------------------------------------------
+PrevRiskAssociates AS
+(
+    SELECT COUNT(*) AS PrevRiskAssociatesCount
+    FROM
+    (
+        SELECT
+            x.EmployeeCode
+        FROM
+        (
+            SELECT
+                a.EmployeeCode,
+                CAST(a.LoggedDate AS DATE) AS LoggedDate,
+                ISNULL(MAX(p.ProductiveHours),0) AS ProductiveHours
+            FROM EmployeeActivityLogSummary a
+            INNER JOIN Employees e
+                ON a.EmployeeCode = e.EmployeeCode
+            LEFT JOIN ProductiveData p
+                ON p.EmployeeCode = e.EmployeeCode
+               AND p.LogDate = CAST(a.LoggedDate AS DATE)
+            WHERE a.LoggedDate BETWEEN DATEADD(DAY,-@Days,@FromDate)
+                                   AND DATEADD(DAY,-1,@FromDate)
+              AND ISNULL(a.TOT_LOGGEDHOURS,0) > 0
+            GROUP BY
+                a.EmployeeCode,
+                CAST(a.LoggedDate AS DATE)
+        ) x
+        WHERE x.ProductiveHours < @Productive_Hours_Threshold
+        GROUP BY x.EmployeeCode
+        HAVING COUNT(*) >= @Days_Threshold
+    ) y
+)
+ 
+---------------------------------------------------
+-- FINAL OUTPUT
+---------------------------------------------------
+SELECT
+    sc.SpanOfControlCount AS TotalAssociates,
+ 
+    ra.RiskAssociatesCount     AS Risk_Associates,
+    pra.PrevRiskAssociatesCount AS Previous_Risk_Associates,
+ 
+    ---------------------------------------------------
+    -- AVG PRODUCTIVITY %
+    ---------------------------------------------------
+    CAST(ISNULL(cp.Productive,0) AS DECIMAL(18,2)) AS Avg_Productivity_Percent,
+    CAST(ISNULL(pp.Productive,0) AS DECIMAL(18,2)) AS Previous_Productivity_Percent,
+ 
+    CASE
+        WHEN ISNULL(pp.Productive,0) = 0
+        THEN 0
+        ELSE ROUND((cp.Productive - pp.Productive) * 100.0 / pp.Productive, 2)
+    END AS Productivity_Raise_Dip,
+ 
+    ---------------------------------------------------
+    -- AVG ACTIVE HOURS
+    ---------------------------------------------------
+    CAST(ISNULL(cp.Active,0) AS DECIMAL(18,2)) AS Avg_ActiveHours,
+    CAST(ISNULL(pp.Active,0) AS DECIMAL(18,2)) AS Previous_ActiveHours,
+ 
+    CAST(ISNULL(cp.Active,0) - ISNULL(pp.Active,0) AS DECIMAL(18,2)) AS ActiveHours_Raise_Dip,
+ 
+    ---------------------------------------------------
+    -- AVG IDLE %
+    ---------------------------------------------------
+    CAST(ISNULL(cp.Idle,0) AS DECIMAL(18,2)) AS Avg_Idle_Percentage,
+    CAST(ISNULL(pp.Idle,0) AS DECIMAL(18,2)) AS Previous_Idle_Percentage,
+ 
+    CASE
+        WHEN ISNULL(pp.Idle,0) = 0
+        THEN 0
+        ELSE ROUND((cp.Idle - pp.Idle) * 100.0 / pp.Idle, 2)
+    END AS Idle_Raise_Dip,
+ 
+    ---------------------------------------------------
+    -- ATTENDANCE %
+    ---------------------------------------------------
+    ISNULL(ROUND(ca.Present * 100.0 / NULLIF(ca.Total,0), 2), 0)
+        AS Attendance_Percentage,
+ 
+    ISNULL(ROUND(pa.Present * 100.0 / NULLIF(pa.Total,0), 2), 0)
+        AS Previous_Attendance_Percentage,
+ 
+    ISNULL(
+        ROUND(
+            (ca.Present * 100.0 / NULLIF(ca.Total,0))
+            -
+            (pa.Present * 100.0 / NULLIF(pa.Total,0)),
+            2
+        ),
+        0
+    ) AS Attendance_Raise_Dip
+ 
+FROM CurrentProd cp
+CROSS JOIN PrevProd pp
+CROSS JOIN CurrentAtt ca
+CROSS JOIN PrevAtt pa
+CROSS JOIN TotalAssociates ta
+CROSS JOIN SpanOfControlCount sc
+CROSS JOIN RiskAssociates ra
+CROSS JOIN PrevRiskAssociates pra;
+ 
+END
+ 
