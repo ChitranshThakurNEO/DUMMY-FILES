@@ -166,3 +166,14 @@ opHost. A BackgroundService has thrown an unhandled exception, and the IHost ins
 2026-10-13T11:44:24.608697061Z       Error Number:1505,State:1,Class:16
 2026-10-13T11:44:24.608704465Z info: Microsoft.Hosting.Lifetime[0]
 2026-10-13T11:44:24.608712620Z       Application is shutting down...
+
+
+
+MigrationId	ProductVersion
+20260715121416_FinalDatabaseChanges	8.0.26
+20260717052039_AddedNetWorkIDConfig	10.0.10
+20260731083245_AddedMSIInstallationInventory	10.0.10
+20260825103709_AddedShiftIdToSummaryTable	10.0.10
+20260919034415_AddedIndexUX_MasterEmployeeSystemInfo_UserName_SystemName	10.0.10
+20260921065904_AddedIndexes	10.0.10
+20260924033414_duplicate index	10.0.10
