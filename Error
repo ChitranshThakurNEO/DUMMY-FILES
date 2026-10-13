@@ -1,80 +1,168 @@
- WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService[0]
-2026-09-18T07:19:35.305611593Z       Error processing activity file ActivityLog/year=2026/month=09/day=17/user=Shuchi.Yogesh/1-7887.json
-2026-09-18T07:19:35.305630278Z       Azure.RequestFailedException: The uploaded data is not contiguous or the position query parameter value is not equal to the length of the file after appending the uploaded data.
-2026-09-18T07:19:35.305641780Z       RequestId:0ad277e5-801f-0026-733e-4713be000000
-2026-09-18T07:19:35.305651167Z       Time:2026-09-18T07:19:35.3019846Z
-2026-09-18T07:19:35.305659773Z       Status: 400 (The uploaded data is not contiguous or the position query parameter value is not equal to the length of the file after appending the uploaded data.)
-2026-09-18T07:19:35.305668199Z       ErrorCode: InvalidFlushPosition
-2026-09-18T07:19:35.305676525Z       
-2026-09-18T07:19:35.305684901Z       Content:
-2026-09-18T07:19:35.305694118Z       {"error":{"code":"InvalidFlushPosition","message":"The uploaded data is not contiguous or the position query parameter value is not equal to the length of the file after appending the uploaded data.\nRequestId:0ad277e5-801f-0026-733e-4713be000000\nTime:2026-09-18T07:19:35.3019846Z"}}
-2026-09-18T07:19:35.305702674Z       
-2026-09-18T07:19:35.305710839Z       Headers:
-2026-09-18T07:19:35.305719646Z       Server: Windows-Azure-HDFS/1.0 Microsoft-HTTPAPI/2.0
-2026-09-18T07:19:35.305728132Z       x-ms-error-code: InvalidFlushPosition
-2026-09-18T07:19:35.305736427Z       x-ms-request-id: 0ad277e5-801f-0026-733e-4713be000000
-2026-09-18T07:19:35.305745184Z       x-ms-version: 2026-06-06
-2026-09-18T07:19:35.305762847Z       x-ms-client-request-id: cfe4b545-5b1e-4010-bc35-1cd0179a1bed
-2026-09-18T07:19:35.305769620Z       Date: Fri, 18 Sep 2026 07:19:35 GMT
-2026-09-18T07:19:35.305776142Z       Content-Length: 284
-2026-09-18T07:19:35.305782874Z       Content-Type: application/json;charset=utf-8
-2026-09-18T07:19:35.305789537Z       
-2026-09-18T07:19:35.305796771Z          at Azure.Storage.Files.DataLake.PathRestClient.FlushDataAsync(Nullable`1 timeout, Nullable`1 position, Nullable`1 retainUncommittedData, Nullable`1 close, Nullable`1 contentLength, Byte[] contentMD5, String leaseId, Nullable`1 leaseAction, Nullable`1 leaseDuration, String proposedLeaseId, String cacheControl, String contentType, String contentDisposition, String contentEncoding, String contentLanguage, String ifMatch, String ifNoneMatch, Nullable`1 ifModifiedSince, Nullable`1 ifUnmodifiedSince, String encryptionKey, String encryptionKeySha256, Nullable`1 encryptionAlgorithm, CancellationToken cancellationToken)
-2026-09-18T07:19:35.305804345Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.FlushInternal(Int64 position, Nullable`1 retainUncommittedData, Nullable`1 close, PathHttpHeaders httpHeaders, DataLakeRequestConditions conditions, Nullable`1 leaseAction, Nullable`1 leaseDuration, String proposedLeaseId, Boolean async, CancellationToken cancellationToken)
-2026-09-18T07:19:35.305811218Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.<>c__DisplayClass120_0.<<GetPartitionedUploaderBehaviors>b__1>d.MoveNext()
-2026-09-18T07:19:35.305817950Z       --- End of stack trace from previous location ---
-2026-09-18T07:19:35.305824924Z          at Azure.Storage.PartitionedUploader`2.UploadInternal(Stream content, Nullable`1 expectedContentLength, TServiceSpecificData args, IProgress`1 progressHandler, Boolean async, CancellationToken cancellationToken)
-2026-09-18T07:19:35.305831796Z          at Azure.Storage.Files.DataLake.DataLakeFileClient.StagedUploadInternal(Stream content, DataLakeFileUploadOptions options, Boolean async, CancellationToken cancellationToken)
-2026-09-18T07:19:35.305838559Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
-2026-09-18T07:19:35.305845211Z          at WorkVista.EventHub.Consumer.Services.DataLakeService.MarkFileProcessedAsync(String filePath) in C:\WorkVista_Repos\WorkVista.Consumer\Services\DataLakeService.cs:line 770
-2026-09-18T07:19:35.305852285Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 104
-
-
-
-=========================================================================================
-
-
-
-2026-09-18T09:21:28.565956490Z fail: Quartz.Core.ErrorLogger[0]
-2026-09-18T09:21:28.565963954Z       Job DEFAULT.ProductivitySummaryJob threw an exception.
-2026-09-18T09:21:28.565971208Z       Quartz.Core.JobExecutionProcessException: Job threw an unhandled exception
-2026-09-18T09:21:28.565978481Z        ---> System.ArgumentException: An item with the same key has already been added. Key: SG356729_09/18/2026
-2026-09-18T09:21:28.565985725Z          at System.Collections.Generic.Dictionary`2.Add(TKey key, TValue value)
-2026-09-18T09:21:28.565992888Z          at System.Linq.Enumerable.SpanToDictionary[TSource,TKey](ReadOnlySpan`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
-2026-09-18T09:21:28.566000132Z          at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
-2026-09-18T09:21:28.566015671Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.CreateProductivitySummaryAsync() in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 692
-2026-09-18T09:21:28.566023536Z          at WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob.Execute(IJobExecutionContext context) in C:\WorkVista_Repos\WorkVista.Processor\Jobs\ProductivitySummaryJob.cs:line 28
-2026-09-18T09:21:28.566030990Z          at Quartz.Core.JobRunShell.Run(CancellationToken cancellationToken)
-2026-09-18T09:21:28.566038524Z          --- End of inner exception stack trace --- [See nested exception: System.ArgumentException: An item with the same key has already been added. Key: SG356729_09/18/2026
-2026-09-18T09:21:28.566045827Z          at System.Collections.Generic.Dictionary`2.Add(TKey key, TValue value)
-2026-09-18T09:21:28.566053251Z          at System.Linq.Enumerable.SpanToDictionary[TSource,TKey](ReadOnlySpan`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
-2026-09-18T09:21:28.566060635Z          at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
-2026-09-18T09:21:28.566068079Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.CreateProductivitySummaryAsync() in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 692
-2026-09-18T09:21:28.566075302Z          at WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob.Execute(IJobExecutionContext context) in C:\WorkVista_Repos\WorkVista.Processor\Jobs\ProductivitySummaryJob.cs:line 28
-2026-09-18T09:21:28.566082997Z          at Quartz.Core.JobRunShell.Run(CancellationToken cancellationToken)]
-
-
-
-+========================================
-
-fail: WorkVista.EventHub.Processor.EmployeeActivityProcessingWorker[0]
-2026-09-18T11:20:14.356259428Z       Error while processing activity data.
-2026-09-18T11:20:14.356268836Z       System.ArgumentException: An item with the same key has already been added. Key: SG051690|AMR2A-1FL203136
-2026-09-18T11:20:14.356801138Z          at System.Linq.Enumerable.ToDictionary[TSource,TKey](IEnumerable`1 source, Func`2 keySelector, IEqualityComparer`1 comparer)
-2026-09-18T11:20:14.356837506Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.SyncSystemInfosAsync(List`1 systemInfos, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 420
-2026-09-18T11:20:14.356849207Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 67
-2026-09-18T11:20:14.356868754Z          at WorkVista.EventHub.Processor.EmployeeActivityProcessingWorker.ExecuteAsync(CancellationToken stoppingToken) in C:\WorkVista_Repos\WorkVista.Processor\EmployeeActivityProcessingWorker.cs:line 35
-
-2026-09-18T11:20:14.594521270Z info: WorkVista.EventHub.Processor.Jobs.ProductivitySummaryJob[0]
-2026-09-18T11:20:14.594734117Z       ProductivitySummaryJob COMPLETED at 09/18/2026 11:20:14
-
-===================================================
-
-
-fail: WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService[0]
-2026-09-18T12:21:10.119678030Z       Error processing activity file ActivityLog/year=2026/month=09/day=18/user=SG413853/0-13547.json
-2026-09-18T12:21:10.119685264Z       System.ArgumentException: An item with the same key has already been added. Key: 610226|HC1WFM86CPPY3
-2026-09-18T12:21:10.119702626Z          at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToDictionaryAsync[TSource,TKey,TElement](IQueryable`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer, CancellationToken cancellationToken)
-2026-09-18T12:21:10.119709870Z          at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToDictionaryAsync[TSource,TKey,TElement](IQueryable`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer, CancellationToken cancellationToken)
-2026-09-18T12:21:10.119717274Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessActivityLogsAsync(List`1 activityLogs, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 143
-2026-09-18T12:21:10.119725349Z          at WorkVista.EventHub.Processor.Services.EmployeeActivityProcessingService.ProcessAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Processor\Services\EmployeeActivityProcessingService.cs:line 100
+Connecting to stream...
+2026-10-13T11:44:24.26800  Connecting to the container 'workvista-migration'...
+2026-10-13T11:44:24.30063  Successfully Connected to container: 'workvista-migration' [Revision: 'workvista-migration--0000043', Replica: 'workvista-migration--0000043-666d59b48d-vckmd']
+2026-10-13T11:44:20.407903730Z info: Microsoft.Hosting.Lifetime[0]
+2026-10-13T11:44:20.407949255Z       Application started. Press Ctrl+C to shut down.
+2026-10-13T11:44:20.412003312Z info: Microsoft.Hosting.Lifetime[0]
+2026-10-13T11:44:20.412026204Z       Hosting environment: Production
+2026-10-13T11:44:20.412649638Z info: Microsoft.Hosting.Lifetime[0]
+2026-10-13T11:44:20.412668583Z       Content root path: /app
+2026-10-13T11:44:23.537007395Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:23.537048221Z       Executed DbCommand (97ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:23.537058641Z       SELECT 1
+2026-10-13T11:44:24.118189065Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.118396883Z       Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.118407703Z       SELECT 1
+2026-10-13T11:44:24.121508826Z info: Microsoft.EntityFrameworkCore.Migrations[20411]
+2026-10-13T11:44:24.121646022Z       Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-10-13T11:44:24.200933614Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.200960855Z       Executed DbCommand (75ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.200973398Z       DECLARE @result int;
+2026-10-13T11:44:24.200981404Z       EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+2026-10-13T11:44:24.201005508Z       SELECT @result
+2026-10-13T11:44:24.319494118Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.319532280Z       Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.319544312Z       IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+2026-10-13T11:44:24.319553659Z       BEGIN
+2026-10-13T11:44:24.319564610Z           CREATE TABLE [__EFMigrationsHistory] (
+2026-10-13T11:44:24.319573997Z               [MigrationId] nvarchar(150) NOT NULL,
+2026-10-13T11:44:24.319583996Z               [ProductVersion] nvarchar(32) NOT NULL,
+2026-10-13T11:44:24.319593053Z               CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+2026-10-13T11:44:24.319602090Z           );
+2026-10-13T11:44:24.319610816Z       END;
+2026-10-13T11:44:24.338887838Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.338920649Z       Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.338933192Z       SELECT 1
+2026-10-13T11:44:24.341135009Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.341185914Z       Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.341202295Z       SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-10-13T11:44:24.347322100Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.347355652Z       Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.347368597Z       SELECT [MigrationId], [ProductVersion]
+2026-10-13T11:44:24.347378665Z       FROM [__EFMigrationsHistory]
+2026-10-13T11:44:24.347387622Z       ORDER BY [MigrationId];
+2026-10-13T11:44:24.405199266Z info: Microsoft.EntityFrameworkCore.Migrations[20402]
+2026-10-13T11:44:24.405234371Z       Applying migration '20261005063205_AddedMSIInventoryColumnsToNullable'.
+2026-10-13T11:44:24.531337968Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.531389684Z       Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.531424730Z       DROP INDEX [IX_MSIInstallationInventory_NTID_EMPID_HostName_BuildNumber] ON [MSIInstallationInventory];
+2026-10-13T11:44:24.535093463Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.535368275Z       Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.535380568Z       DECLARE @var nvarchar(max);
+2026-10-13T11:44:24.535389806Z       SELECT @var = QUOTENAME([d].[name])
+2026-10-13T11:44:24.535398963Z       FROM [sys].[default_constraints] [d]
+2026-10-13T11:44:24.535407599Z       INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+2026-10-13T11:44:24.535416315Z       WHERE ([d].[parent_object_id] = OBJECT_ID(N'[MSIInstallationInventory]') AND [c].[name] = N'NTID');
+2026-10-13T11:44:24.535424540Z       IF @var IS NOT NULL EXEC(N'ALTER TABLE [MSIInstallationInventory] DROP CONSTRAINT ' + @var + ';');
+2026-10-13T11:44:24.535432625Z       ALTER TABLE [MSIInstallationInventory] ALTER COLUMN [NTID] nvarchar(100) NULL;
+2026-10-13T11:44:24.538137701Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.538165893Z       Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.538175842Z       DECLARE @var1 nvarchar(max);
+2026-10-13T11:44:24.538185189Z       SELECT @var1 = QUOTENAME([d].[name])
+2026-10-13T11:44:24.538193545Z       FROM [sys].[default_constraints] [d]
+2026-10-13T11:44:24.538202712Z       INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+2026-10-13T11:44:24.538211188Z       WHERE ([d].[parent_object_id] = OBJECT_ID(N'[MSIInstallationInventory]') AND [c].[name] = N'EMPID');
+2026-10-13T11:44:24.538220355Z       IF @var1 IS NOT NULL EXEC(N'ALTER TABLE [MSIInstallationInventory] DROP CONSTRAINT ' + @var1 + ';');
+2026-10-13T11:44:24.538229753Z       ALTER TABLE [MSIInstallationInventory] ALTER COLUMN [EMPID] nvarchar(50) NULL;
+2026-10-13T11:44:24.541370641Z info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+2026-10-13T11:44:24.541398593Z       Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.541410906Z       CREATE TABLE [JobHistories] (
+2026-10-13T11:44:24.541421366Z           [Id] bigint NOT NULL IDENTITY,
+2026-10-13T11:44:24.541431565Z           [RunDate] datetime2 NOT NULL,
+2026-10-13T11:44:24.541441353Z           [JobName] nvarchar(max) NOT NULL,
+2026-10-13T11:44:24.541450330Z           [Status] int NOT NULL,
+2026-10-13T11:44:24.541460850Z           [StatusComment] nvarchar(max) NULL,
+2026-10-13T11:44:24.541470277Z           [CreatedBy] nvarchar(max) NULL,
+2026-10-13T11:44:24.541479084Z           [CreatedDate] datetime2 NOT NULL,
+2026-10-13T11:44:24.541495855Z           CONSTRAINT [PK_JobHistories] PRIMARY KEY ([Id])
+2026-10-13T11:44:24.541504661Z       );
+2026-10-13T11:44:24.555992893Z fail: Microsoft.EntityFrameworkCore.Database.Command[20102]
+2026-10-13T11:44:24.556041043Z       Failed executing DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+2026-10-13T11:44:24.556056151Z       CREATE UNIQUE INDEX [IX_MSIInstallationInventory_HostName_BuildNumber] ON [MSIInstallationInventory] ([HostName], [BuildNumber]);
+2026-10-13T11:44:24.606677404Z fail: Microsoft.Extensions.Hosting.Internal.Host[9]
+2026-10-13T11:44:24.606926178Z       BackgroundService failed
+2026-10-13T11:44:24.606941236Z       Microsoft.Data.SqlClient.SqlException (0x80131904): The CREATE UNIQUE INDEX statement terminated because a duplicate key was found for the object name 'dbo.MSIInstallationInventory' and the index name 'IX_MSIInstallationInventory_HostName_BuildNumber'. The duplicate key value is (AMR2A1FL-603155, 1.7).
+2026-10-13T11:44:24.606963989Z       The statement has been terminated.
+2026-10-13T11:44:24.606973456Z          at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+2026-10-13T11:44:24.606981732Z          at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+2026-10-13T11:44:24.606989116Z          at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+2026-10-13T11:44:24.606996459Z          at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+2026-10-13T11:44:24.607004053Z          at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+2026-10-13T11:44:24.607011307Z          at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+2026-10-13T11:44:24.607018571Z          at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+2026-10-13T11:44:24.607025674Z          at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__251_1(IAsyncResult asyncResult)
+2026-10-13T11:44:24.607033198Z          at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+2026-10-13T11:44:24.607041013Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.607048406Z          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607056001Z          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607063334Z          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607070888Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607078182Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607087249Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607094452Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607102036Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementationAsync(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607117205Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementationAsync(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607124999Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.<>c.<<MigrateAsync>b__22_1>d.MoveNext()
+2026-10-13T11:44:24.607147331Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.607155276Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607163541Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607171185Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607178649Z          at WorkVista.Server.MigrationService.Worker.<>c__DisplayClass7_0.<<RunMigrationAsync>b__0>d.MoveNext() in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 83
+2026-10-13T11:44:24.607185662Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.607192725Z          at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.<>c.<<ExecuteAsync>b__3_0>d.MoveNext()
+2026-10-13T11:44:24.607200239Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.607207724Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+2026-10-13T11:44:24.607214737Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.607222090Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607229153Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607236658Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-10-13T11:44:24.607248249Z          at WorkVista.Server.MigrationService.Worker.RunMigrationAsync(WorkVistaDbContext dbContext, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 81
+2026-10-13T11:44:24.607256134Z          at WorkVista.Server.MigrationService.Worker.ExecuteAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 33
+2026-10-13T11:44:24.607263598Z          at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)
+2026-10-13T11:44:24.607271252Z       ClientConnectionId:92d027c2-2111-4966-8207-bc38161daa5f
+2026-10-13T11:44:24.607278415Z       Error Number:1505,State:1,Class:16
+2026-10-13T11:44:24.608329375Z crit: Microsoft.Extensions.Hosting.Internal.Host[10]
+2026-10-13T11:44:24.608343852Z       The HostOptions.BackgroundServiceExceptionBehavior is configured to St
+opHost. A BackgroundService has thrown an unhandled exception, and the IHost instance is stopping. To avoid this behavior, configure this to Ignore; however the BackgroundService will not be restarted.
+2026-10-13T11:44:24.608353039Z       Microsoft.Data.SqlClient.SqlException (0x80131904): The CREATE UNIQUE INDEX statement terminated because a duplicate key was found for the object name 'dbo.MSIInstallationInventory' and the index name 'IX_MSIInstallationInventory_HostName_BuildNumber'. The duplicate key value is (AMR2A1FL-603155, 1.7).
+2026-10-13T11:44:24.608384137Z       The statement has been terminated.
+2026-10-13T11:44:24.608393254Z          at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+2026-10-13T11:44:24.608401139Z          at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+2026-10-13T11:44:24.608408673Z          at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+2026-10-13T11:44:24.608416708Z          at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+2026-10-13T11:44:24.608424232Z          at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+2026-10-13T11:44:24.608432066Z          at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+2026-10-13T11:44:24.608439240Z          at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+2026-10-13T11:44:24.608446834Z          at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__251_1(IAsyncResult asyncResult)
+2026-10-13T11:44:24.608454438Z          at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+2026-10-13T11:44:24.608462072Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.608469296Z          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608476760Z          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608484174Z          at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608492319Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608499672Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608507337Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608514771Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608531121Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementationAsync(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608554024Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementationAsync(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608562159Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.<>c.<<MigrateAsync>b__22_1>d.MoveNext()
+2026-10-13T11:44:24.608569483Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.608577317Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608585222Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608592636Z          at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608599950Z          at WorkVista.Server.MigrationService.Worker.<>c__DisplayClass7_0.<<RunMigrationAsync>b__0>d.MoveNext() in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 83
+2026-10-13T11:44:24.608607153Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.608614557Z          at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.<>c.<<ExecuteAsync>b__3_0>d.MoveNext()
+2026-10-13T11:44:24.608621620Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.608629164Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+2026-10-13T11:44:24.608636718Z       --- End of stack trace from previous location ---
+2026-10-13T11:44:24.608644462Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608652117Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608659651Z          at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+2026-10-13T11:44:24.608666814Z          at WorkVista.Server.MigrationService.Worker.RunMigrationAsync(WorkVistaDbContext dbContext, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 81
+2026-10-13T11:44:24.608674218Z          at WorkVista.Server.MigrationService.Worker.ExecuteAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 33
+2026-10-13T11:44:24.608681632Z          at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)
+2026-10-13T11:44:24.608689386Z       ClientConnectionId:92d027c2-2111-4966-8207-bc38161daa5f
+2026-10-13T11:44:24.608697061Z       Error Number:1505,State:1,Class:16
+2026-10-13T11:44:24.608704465Z info: Microsoft.Hosting.Lifetime[0]
+2026-10-13T11:44:24.608712620Z       Application is shutting down...
