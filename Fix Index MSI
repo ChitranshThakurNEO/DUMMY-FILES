@@ -1,0 +1,10 @@
+;WITH ranked AS (
+    SELECT *,
+           ROW_NUMBER() OVER (
+               PARTITION BY NTID, HostName, BuildNumber
+               ORDER BY CASE WHEN EMPID IS NULL THEN 1 ELSE 0 END,
+                        CreatedAt DESC
+           ) AS rn
+    FROM dbo.MasterMSIInstallationInventory   -- use your real table name
+)
+DELETE FROM ranked WHERE rn > 1;
