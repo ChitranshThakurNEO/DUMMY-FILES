@@ -1,0 +1,88 @@
+- End of stack trace from previous location ---
+13/10/2026, 11:01:36
+
+at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+13/10/2026, 11:01:36
+
+at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+13/10/2026, 11:01:36
+
+ClientConnectionId:b73e83f3-8915-4966-ae8a-c22435b4e51a
+13/10/2026, 11:01:36
+
+at WorkVista.Server.MigrationService.Worker.ExecuteAsync(CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 33
+13/10/2026, 11:01:36
+
+Error Number:1505,State:1,Class:16
+13/10/2026, 11:01:36
+
+Application is shutting down...
+13/10/2026, 11:01:36
+
+at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+13/10/2026, 11:01:36
+
+--- End of stack trace from previous location ---
+13/10/2026, 11:01:36
+
+at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+13/10/2026, 11:01:36
+
+at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)
+13/10/2026, 11:01:36
+
+at WorkVista.Server.MigrationService.Worker.RunMigrationAsync(WorkVistaDbContext dbContext, CancellationToken cancellationToken) in C:\WorkVista_Repos\WorkVista.Server.MigrationService\Worker.cs:line 81
+13/10/2026, 11:01:36
+
+info: Microsoft.Hosting.Lifetime[0]
+13/10/2026, 11:01:36
+
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+13/10/2026, 11:01:36
+
+at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+13/10/2026, 11:01:36
+
+Executed DbCommand (50ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+13/10/2026, 11:01:36
+
+at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__251_1(IAsyncResult asyncResult)
+13/10/2026, 11:01:36
+
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+13/10/2026, 11:01:36
+
+SELECT @result
+13/10/2026, 11:01:36
+
+at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+13/10/2026, 11:01:36
+
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+13/10/2026, 11:01:36
+
+--- End of stack trace from previous location ---
+13/10/2026, 11:01:36
+
+DECLARE @result int;
+13/10/2026, 11:01:36
+
+info: Microsoft.EntityFrameworkCore.Migrations[20411]
+13/10/2026, 11:01:36
+
+at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+13/10/2026, 11:01:36
+
+SELECT 1
+13/10/2026, 11:01:36
+
+Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+13/10/2026, 11:01:36
+
+at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+13/10/2026, 11:01:36
+
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+13/10/2026, 11:01:36
+
+--- End of stack trace from previous location ---
