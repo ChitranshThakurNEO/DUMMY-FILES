@@ -1,0 +1,85 @@
+CREATE  VIEW [dbo].[vw_MasterEmployee]      
+  
+AS      
+  
+SELECT      
+  
+    EmployeeCode      
+  
+    , FullName      
+  
+    , OFFICIAL_EMAIL AS Email      
+  
+    , MANAGER_1      
+  
+    , MANAGER_1_NAME      
+  
+    , MANAGER_1_EMAIL      
+  
+    , MANAGER_2      
+  
+    , MANAGER_2_NAME      
+  
+    , MANAGER_2_EMAIL      
+  
+    , MANAGER_3      
+  
+    , MANAGER_3_NAME      
+  
+    , MANAGER_3_EMAIL      
+  
+    , MANAGER_4      
+  
+    , MANAGER_4_NAME      
+  
+    , MANAGER_4_EMAIL      
+  
+    , MANAGER_5      
+  
+    , MANAGER_5_NAME      
+  
+    , MANAGER_5_EMAIL      
+  
+    , MANAGER_6      
+  
+    , MANAGER_6_NAME      
+  
+    , MANAGER_6_EMAIL      
+  
+    , MANAGER_7      
+  
+    , MANAGER_7_NAME      
+  
+    , MANAGER_7_EMAIL      
+  
+    , JOB_TITLE      
+  
+    , CLIENT_CODE      
+  
+    , CLIENT_NAME      
+  
+    , COUNTRY      
+  
+    , CITY      
+  
+    , DOJ      
+  
+    , DEPARTMENT      
+  
+    , WORK_MODE      
+  
+    , PERMANENT_CONTRACT  
+  
+    , DESIGNATION_NAME  
+  
+    , PAY_GROUP  
+  
+    ,GLOBAL_ID      
+  
+    , ACTIVE_SEPARATED  
+  
+    , COMPENSATION_GRADE  
+  
+FROM [dbo].[All_GeoEmpDataDEX_WV]  
+  
+WHERE ACTIVE_SEPARATED = 'ACTIVE'
