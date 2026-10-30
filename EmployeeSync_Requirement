@@ -1,0 +1,310 @@
+Here's a requirement document prompt you can use internally before we start designing the solution.
+
+Employee Master Data Sync & Role Synchronization Requirement
+Background
+
+The application currently uses All_GeoEmpDataDEX_WV as the primary employee master table. This table serves as the source for:
+
+vw_MasterEmployee
+Employee Dashboard
+Manager Dashboard
+RM Dashboard
+Compliance Reports
+Hierarchy-based reports
+Employee Role Synchronization (sp_SyncEmployeeRoles)
+
+Employee data is received daily from an external source via AWS S3 in the form of two CSV files:
+
+Active Employees File
+
+Contains the complete current active workforce.
+
+Inactive Employees File
+
+Contains the complete current inactive/separated workforce.
+
+Both files have the same structure as All_GeoEmpDataDEX_WV.
+
+Objective
+
+Build an automated daily synchronization process that:
+
+Reads employee data files from S3.
+Validates the received data.
+Synchronizes employee records into All_GeoEmpDataDEX_WV.
+Automatically manages employee and manager roles.
+Maintains a complete audit trail of synchronization activities.
+Prevents bad or incomplete files from impacting dashboards and reporting.
+Current Employee Data Structure
+
+Key columns available in employee files:
+
+Plain Text
+EmployeeCode
+FullName
+Email
+GLOBAL_ID
+OFFICIAL_EMAIL
+ 
+MANAGER_1 - MANAGER_7
+MANAGER_1_NAME - MANAGER_7_NAME
+MANAGER_1_EMAIL - MANAGER_7_EMAIL
+ 
+JOB_TITLE
+CLIENT_CODE
+CLIENT_NAME
+COUNTRY
+CITY
+DOJ
+DEPARTMENT
+WORK_MODE
+PERMANENT_CONTRACT
+DESIGNATION_NAME
+PAY_GROUP
+ACTIVE_SEPARATED
+COMPENSATION_GRADE
+Employee Identification
+
+The primary employee identifier for synchronization should be:
+
+Plain Text
+GLOBAL_ID
+
+Reason:
+
+Used throughout hierarchy logic.
+Used in dashboards.
+Stable enterprise identifier.
+More reliable than EmployeeCode or Email.
+Functional Requirements
+1. Daily File Processing
+
+The system shall:
+
+Download Active Employee CSV from S3.
+Download Inactive Employee CSV from S3.
+Load files into staging tables.
+Validate files before updating production data.
+2. Data Validation
+
+The system must validate:
+
+Duplicate Employees
+
+No duplicate GLOBAL_ID should exist within a file.
+
+Active/Inactive Conflict
+
+An employee cannot exist in both Active and Inactive files in the same batch.
+
+Mandatory Fields
+
+Required fields:
+
+Plain Text
+GLOBAL_ID
+EmployeeCode
+OFFICIAL_EMAIL
+Record Count Validation
+
+The system should detect abnormal headcount drops or spikes before applying updates.
+
+Example:
+
+Plain Text
+Previous Active Count: 10000
+Current Active Count: 9950
+
+Valid.
+
+Plain Text
+Previous Active Count: 10000
+Current Active Count: 1200
+
+Potentially invalid.
+
+3. Employee Synchronization
+New Employees
+
+If a GLOBAL_ID exists in Active CSV but not in All_GeoEmpDataDEX_WV:
+
+Plain Text
+Insert Employee
+Existing Employees
+
+If employee exists and any attributes have changed:
+
+Plain Text
+Update Employee
+
+Examples:
+
+Manager Changes
+Department Changes
+Country Changes
+Email Changes
+Designation Changes
+Separated Employees
+
+If employee exists in Inactive CSV:
+
+Plain Text
+Mark employee as separated/inactive
+
+Do not physically delete the record.
+
+Reactivated Employees
+
+If an employee was previously marked inactive but appears again in Active CSV:
+
+Plain Text
+Reactivate employee
+Role Synchronization
+
+After successful employee synchronization:
+
+SQL
+EXEC dbo.sp_SyncEmployeeRoles
+
+must be executed.
+
+Employee Role
+
+Every active employee in vw_MasterEmployee should have:
+
+Plain Text
+Employee Role
+Manager Role
+
+Any employee appearing in:
+
+Plain Text
+MANAGER_1
+MANAGER_2
+MANAGER_3
+MANAGER_4
+MANAGER_5
+MANAGER_6
+MANAGER_7
+
+should have:
+
+Plain Text
+Manager Role
+Separated Employees
+
+When an employee becomes inactive:
+
+Plain Text
+Employee Role → Deactivated
+Manager Role → Deactivated
+
+using existing soft-delete logic.
+
+Audit & Tracking
+Sync Batch Tracking
+
+Maintain a batch-level audit record including:
+
+Plain Text
+Batch Id
+File Names
+Start Time
+End Time
+Status
+Total Active Records
+Total Inactive Records
+New Employees
+Updated Employees
+Separated Employees
+Reactivated Employees
+Error Details
+Employee-Level Tracking
+
+Maintain detailed employee sync logs:
+
+Plain Text
+GLOBAL_ID
+EmployeeCode
+Action Type
+Timestamp
+Remarks
+
+Action Types:
+
+Plain Text
+Added
+Updated
+Separated
+Reactivated
+Role Assigned
+Role Removed
+Validation Failed
+Change History Tracking
+
+Maintain employee attribute history for audit purposes.
+
+Track changes to fields such as:
+
+Plain Text
+Manager
+Department
+Country
+City
+Designation
+Email
+Work Mode
+Pay Group
+Compensation Grade
+
+Store:
+
+Plain Text
+Old Value
+New Value
+Change Date
+Batch Id
+Failure Handling
+
+If validation fails:
+
+Plain Text
+Do not update All_GeoEmpDataDEX_WV
+Do not execute sp_SyncEmployeeRoles
+Mark batch as Failed
+Capture failure reason
+
+Existing dashboard data should remain unaffected.
+
+Success Flow
+Plain Text
+S3 Active CSV
++
+S3 Inactive CSV
+↓
+Staging Tables
+↓
+Validation
+↓
+New Employee Detection
+↓
+Employee Updates
+↓
+Employee Separations
+↓
+Employee Reactivations
+↓
+Update All_GeoEmpDataDEX_WV
+↓
+Execute sp_SyncEmployeeRoles
+↓
+Audit Logging
+↓
+Batch Completion
+Expected Outcome
+Fully automated daily employee synchronization.
+Safe updates to All_GeoEmpDataDEX_WV.
+Automatic Employee and Manager role management.
+Complete auditability and troubleshooting capability.
+No impact to dashboards from invalid source files.
+Support for future reporting on employee lifecycle changes.
