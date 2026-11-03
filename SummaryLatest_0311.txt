@@ -1,0 +1,1452 @@
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
+using WorkVista.Consumer.DTOs;
+using WorkVista.Consumer.Interfaces;
+using WorkVista.Processor.Interfaces;
+using WorkVista.Processor.ShiftDate;
+using WorkVista.Processor.Summary;
+using WorkVista.Processor.Tracking;
+using WorkVista.Server.Common.Constants;
+using WorkVista.Server.Common.Extensions;
+using WorkVista.Server.DataContext;
+using WorkVista.Server.DataContext.Entities;
+using WorkVista.Server.DataContext.Entities.Enums;
+using WorkVista.Server.Features.EmployeeActivityLogSummary.Interfaces;
+using WorkVista.Server.Features.MasterDictionary.Interfaces;
+using static WorkVista.Server.Common.Constants.WorkVistaConstants;
+
+namespace WorkVista.Processor.Services
+{
+    public class EmployeeActivityProcessingService
+        : IEmployeeActivityProcessingService
+    {
+        /// <summary>
+        /// Global variables
+        /// </summary>
+        private readonly WorkVistaDbContext _dbContext;
+        private readonly IDataLakeService _dataLakeService;
+        private readonly IEmployeeActivityLogSummaryService _employeeActivityLogSummaryService;
+        private readonly IMasterDictionaryService _dictionaryService;
+        private readonly ILogger<EmployeeActivityProcessingService> _logger;
+        private readonly ShiftDateOptions _shiftDateOptions;
+        private readonly ShiftDateResolver _shiftDateResolver;
+        private readonly ShiftDatePlanner _shiftDatePlanner;
+        private readonly MissedRecordOptions _missedRecordOptions;
+
+        private static readonly SemaphoreSlim _systemInfoSyncLock = new(1, 1);
+
+        /// <summary>
+        /// Constuctor
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="dataLakeService"></param>
+        /// <param name="employeeActivityLogSummaryService"></param>
+        /// <param name="logger"></param>
+        /// <param name="shiftDateOptions"></param>
+        /// <param name="missedRecordOptions"></param>
+        public EmployeeActivityProcessingService(
+            WorkVistaDbContext dbContext,
+            IDataLakeService dataLakeService,
+            IEmployeeActivityLogSummaryService employeeActivityLogSummaryService,
+            IMasterDictionaryService dictionaryService,
+            ILogger<EmployeeActivityProcessingService> logger,
+            IOptions<ShiftDateOptions> shiftDateOptions,
+            IOptions<MissedRecordOptions> missedRecordOptions)
+        {
+            _missedRecordOptions = missedRecordOptions.Value;
+            _dbContext = dbContext;
+            _dataLakeService = dataLakeService;
+            _employeeActivityLogSummaryService = employeeActivityLogSummaryService;
+            _dictionaryService = dictionaryService;
+            _logger = logger;
+            _shiftDateOptions = shiftDateOptions.Value;
+
+            _shiftDateResolver =
+                new ShiftDateResolver(
+                    _shiftDateOptions.BreakThreshold,
+                    ShiftTimeZone.Find(_shiftDateOptions.TimeZoneId));
+
+            _shiftDatePlanner =
+                new ShiftDatePlanner(
+                    _shiftDateResolver,
+                    _shiftDateOptions.LateRecomputeWindow);
+        }
+
+        /// <summary>
+        /// Process raw data
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<int> ProcessAsync(CancellationToken cancellationToken)
+        {
+            var systemInfos =
+                await _dataLakeService
+                    .ReadSystemInfosAsync(
+                        cancellationToken);
+
+            await SyncSystemInfosAsync(
+                systemInfos,
+                cancellationToken);
+
+            var userFolders =
+                await _dataLakeService
+                    .GetActivityUserFoldersAsync(
+                        cancellationToken);
+
+            if (!userFolders.Any())
+            {
+                return 0;
+            }
+
+            /*
+             * Reference data (categories/rules and the employee<->system
+             * map) used to be reloaded from SQL for every single file. With
+             * 100+ users producing many files/day that meant thousands of
+             * redundant round trips per run. Load it once per run instead.
+             */
+
+            var categories =
+                await _dbContext.MasterActivityCategory
+                    .AsNoTracking()
+                    .Where(x => !x.IsDelete && x.IsActive)
+                    .Include(x => x.MasterActivityCategoryRules)
+                    .ToListAsync(cancellationToken);
+
+            var unknownCategory =
+                categories.FirstOrDefault(
+                    x => x.CategoryName == "Unknown");
+
+            var employeeSystems =
+                await _dbContext.MasterEmployeeSystemInfo
+                    .AsNoTracking()
+                    .ToDictionaryAsync(
+                        x => $"{x.UserName}|{x.SystemName}",
+                        StringComparer.OrdinalIgnoreCase,
+                        cancellationToken);
+
+            var processedCount = 0;
+
+            foreach (var userFolder in userFolders)
+            {
+                var files =
+                    await _dataLakeService
+                        .GetPendingActivityFilesAsync(
+                            userFolder,
+                            cancellationToken);
+
+                if (!files.Any())
+                {
+                    continue;
+                }
+
+                // Files that missed records on an earlier attempt, with the
+                // time of that attempt (one listing per user folder).
+                var missedFiles =
+                    await _dataLakeService
+                        .GetMissedActivityFilesAsync(
+                            userFolder,
+                            cancellationToken);
+
+                foreach (var file in files)
+                {
+                    if (missedFiles.TryGetValue(file, out var lastMissedAttempt) &&
+                        MissedRecordPolicy.IsWaitingForRetry(
+                            lastMissedAttempt,
+                            DateTimeOffset.UtcNow,
+                            _missedRecordOptions.RetryDelay))
+                    {
+                        // Retried later, not on every cycle.
+                        continue;
+                    }
+
+                    /*
+                     * Claim the file BEFORE reading/inserting it. This is
+                     * what makes it safe for multiple Processor replicas
+                     * (Container App autoscale: minReplicas 1, maxReplicas
+                     * 20) to run concurrently against the same Data Lake
+                     * folders. Previously the checkpoint was written AFTER
+                     * the DB insert, so two replicas could both see the
+                     * file as "pending", both insert it, and only then
+                     * race for the checkpoint - producing duplicate
+                     * MasterActivityLog rows.
+                     */
+
+                    var claimed =
+                        await _dataLakeService
+                            .TryClaimActivityFileAsync(
+                                file,
+                                cancellationToken);
+
+                    if (!claimed)
+                    {
+                        // Another replica already has this file (or has
+                        // already finished it). Nothing to do here.
+                        continue;
+                    }
+
+                    try
+                    {
+                        var activityLogs =
+                            await _dataLakeService
+                                .ReadActivityFileAsync(
+                                    file,
+                                    cancellationToken);
+
+                        ActivityFileProcessingResult? result = null;
+
+                        if (activityLogs.Any())
+                        {
+                            result =
+                                await ProcessActivityLogsAsync(
+                                    activityLogs,
+                                    categories,
+                                    unknownCategory,
+                                    employeeSystems,
+                                    cancellationToken);
+                        }
+
+                        if (result?.HasMissed == true)
+                        {
+                            var parked =
+                                await TrackMissedActivitiesAsync(
+                                    file,
+                                    result,
+                                    cancellationToken);
+
+                            if (!parked)
+                            {
+                                // Not marked processed: give the file back
+                                // so the missed records are retried. Rows
+                                // already saved are skipped as duplicates.
+                                await _dataLakeService
+                                    .ReleaseActivityFileClaimAsync(
+                                        file,
+                                        cancellationToken);
+
+                                continue;
+                            }
+                        }
+                        else if (missedFiles.ContainsKey(file))
+                        {
+                            await _dataLakeService
+                                .DeleteMissedActivityFileAsync(
+                                    file,
+                                    cancellationToken);
+
+                            _logger.LogInformation(
+                                "Activity file {File} recovered: all records are now saved.",
+                                file);
+                        }
+
+                        await _dataLakeService
+                            .MarkFileProcessedAsync(
+                                file,
+                                cancellationToken);
+
+                        processedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Error processing activity file {File}",
+                            file);
+
+                        // Give the file back so it can be retried on a
+                        // later cycle instead of being stuck claimed
+                        // forever by a replica that failed mid-way.
+                        await _dataLakeService
+                            .ReleaseActivityFileClaimAsync(
+                                file,
+                                cancellationToken);
+                    }
+                }
+            }
+
+            return processedCount;
+        }
+
+        /// <summary>
+        /// Process activity logs
+        /// </summary>
+        /// <param name="activityLogs"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>What happened to every record of the file, including the
+        /// records that were not saved and why.</returns>
+        private async Task<ActivityFileProcessingResult> ProcessActivityLogsAsync(
+            List<ActivityRawRecord> activityLogs,
+            List<MasterActivityCategory> categories,
+            MasterActivityCategory? unknownCategory,
+            Dictionary<string, MasterEmployeeSystemInfo> employeeSystems,
+            CancellationToken cancellationToken)
+        {
+            var result =
+                new ActivityFileProcessingResult
+                {
+                    Total = activityLogs.Count
+                };
+
+            if (!activityLogs.Any())
+            {
+                return result;
+            }
+
+            var candidates =
+                new List<MasterActivityLog>();
+
+            // Source record of each candidate, so a row that fails later can
+            // be reported with its raw values.
+            var sourceOf =
+                new Dictionary<MasterActivityLog, ActivityRawRecord>(
+                    ReferenceEqualityComparer.Instance);
+
+            foreach (var activity in activityLogs)
+            {
+                if (!employeeSystems.TryGetValue(
+                        activity.SystemKey,
+                        out var systemInfo))
+                {
+                    result.AddMissed(
+                        activity,
+                        ActivityMissReason.MissingSystemMapping,
+                        null,
+                        $"No MasterEmployeeSystemInfo for SystemKey '{activity.SystemKey}' (UserName|MachineName)");
+
+                    continue;
+                }
+
+                var category =
+                    ResolveMasterActivity(
+                        activity,
+                        categories)
+                    ?? unknownCategory;
+
+                if (category == null)
+                {
+                    result.AddMissed(
+                        activity,
+                        ActivityMissReason.MissingCategory,
+                        systemInfo.EmployeeCode,
+                        "No category rule matched and no active 'Unknown' category exists");
+
+                    continue;
+                }
+
+                candidates.Add(
+                    new MasterActivityLog
+                    {
+                        EmployeeCode =
+                            systemInfo.EmployeeCode,
+
+                        CategoryId =
+                            category.MasterActivityCategoryId,
+
+                        DurationSeconds =
+                            activity.DurationSeconds,
+
+                        StartTime =
+                            activity.StartTime,
+
+                        EndTime =
+                            activity.EndTime ??
+                            activity.StartTime,
+
+                        // The agent's LogDate is no longer used: it is
+                        // replaced by the Shift Date below.
+                        LogDate =
+                            activity.LogDate,
+
+                        Status =
+                            activity.Status ==
+                            ActivityCategoryTypes.Idle
+                                ? ActivityCategoryTypes.Idle
+                                : ResolveActivityType(category)
+                    });
+
+                sourceOf[candidates[^1]] = activity;
+            }
+
+            if (!candidates.Any())
+            {
+                return result;
+            }
+
+            var employeeCodes =
+                candidates
+                    .Select(x => x.EmployeeCode)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+            /*
+             * Shift Dates depend on the employee's previous activities, which
+             * may be in another file processed by another replica at the same
+             * time. Everything below runs in one transaction holding a lock
+             * per employee, so the stored rows read here cannot change until
+             * this file's rows are committed.
+             */
+
+            await using var transaction =
+                await _dbContext.Database.BeginTransactionAsync(
+                    cancellationToken);
+
+            foreach (var employeeCode in employeeCodes)
+            {
+                await AcquireShiftDateLockAsync(
+                    employeeCode,
+                    cancellationToken);
+            }
+
+            /*
+             * One query for the file's employees: rows from SeedLookback
+             * before the earliest new activity onwards. Used both as the
+             * duplicate check and as context for the Shift Date.
+             */
+
+            var windowStart =
+                candidates.Min(x => x.StartTime) -
+                _shiftDateOptions.SeedLookback;
+
+            var stored =
+                await _dbContext.MasterActivityLog
+                    .AsNoTracking()
+                    .Where(x =>
+                        employeeCodes.Contains(x.EmployeeCode) &&
+                        x.StartTime >= windowStart)
+                    .Select(x => new
+                    {
+                        x.MasterActivityLogId,
+                        x.EmployeeCode,
+                        x.StartTime,
+                        x.EndTime,
+                        x.DurationSeconds,
+                        x.Status,
+                        x.LogDate
+                    })
+                    .ToListAsync(cancellationToken);
+
+            // Compared by ticks: values read from SQL have Kind=Unspecified,
+            // values from the agent JSON are usually Kind=Utc.
+            var existingKeys =
+                stored
+                    .Select(x => ActivityKey(
+                        x.EmployeeCode,
+                        x.StartTime,
+                        x.EndTime,
+                        x.DurationSeconds))
+                    .ToHashSet();
+
+            var masterActivityLogs =
+                candidates
+                    .Where(x => existingKeys.Add(
+                        ActivityKey(
+                            x.EmployeeCode,
+                            x.StartTime,
+                            x.EndTime,
+                            x.DurationSeconds)))
+                    .ToList();
+
+            // Skipped candidates are already stored (AlreadyExists) or appear
+            // twice in this file (DuplicateInFile). Neither is a miss.
+            var storedKeys =
+                stored
+                    .Select(x => ActivityKey(
+                        x.EmployeeCode,
+                        x.StartTime,
+                        x.EndTime,
+                        x.DurationSeconds))
+                    .ToHashSet();
+
+            var skipped =
+                candidates.Count - masterActivityLogs.Count;
+
+            result.AlreadyExists =
+                candidates.Count(x => storedKeys.Contains(
+                    ActivityKey(
+                        x.EmployeeCode,
+                        x.StartTime,
+                        x.EndTime,
+                        x.DurationSeconds)));
+
+            result.DuplicateInFile =
+                skipped - result.AlreadyExists;
+
+            if (!masterActivityLogs.Any())
+            {
+                await transaction.CommitAsync(
+                    cancellationToken);
+
+                return result;
+            }
+
+            var storedByEmployee =
+                stored.ToLookup(
+                    x => x.EmployeeCode,
+                    StringComparer.OrdinalIgnoreCase);
+
+            var storedUpdates =
+                new List<(long Id, DateOnly LogDate)>();
+
+            var newShifts = 0;
+            var crossDate = 0;
+            var lateEmployees = 0;
+            var veryLateEmployees = 0;
+            var anomalies = 0;
+
+            foreach (var employeeRows in masterActivityLogs.GroupBy(
+                         x => x.EmployeeCode,
+                         StringComparer.OrdinalIgnoreCase))
+            {
+                var rows = employeeRows.ToList();
+
+                var plan =
+                    _shiftDatePlanner.Plan(
+                        storedByEmployee[employeeRows.Key]
+                            .Select(x => new StoredShiftActivity(
+                                x.MasterActivityLogId,
+                                x.StartTime,
+                                x.EndTime,
+                                x.Status == ActivityCategoryTypes.Idle,
+                                x.LogDate))
+                            .ToList(),
+                        rows
+                            .Select(x => new ShiftActivity(
+                                x.StartTime,
+                                x.EndTime,
+                                x.Status == ActivityCategoryTypes.Idle))
+                            .ToList());
+
+                for (var i = 0; i < rows.Count; i++)
+                {
+                    rows[i].LogDate = plan.NewShiftDates[i];
+                }
+
+                storedUpdates.AddRange(plan.StoredUpdates);
+
+                newShifts += plan.NewShifts;
+                crossDate += plan.CrossDateAssignments;
+                anomalies += plan.Anomalies;
+
+                if (plan.Path == ShiftPlanPath.Late)
+                {
+                    lateEmployees++;
+                }
+                else if (plan.Path == ShiftPlanPath.VeryLate)
+                {
+                    veryLateEmployees++;
+                }
+            }
+
+            await _dbContext.MasterActivityLog
+                .AddRangeAsync(
+                    masterActivityLogs,
+                    cancellationToken);
+
+            // UX_MasterActivityLog_Dedup is a plain unique index, so a row
+            // that slipped past the duplicate check above fails the whole
+            // save. Keep the previous behavior (log and move on), but roll
+            // back so no stored rows are re-dated for rows that were not
+            // inserted, and clear the change tracker so the failed rows are
+            // not re-sent by the next file's SaveChanges.
+            try
+            {
+                await _dbContext.SaveChangesAsync(
+                    cancellationToken);
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Some activity rows in this batch were rejected as duplicates.");
+
+                _dbContext.ChangeTracker.Clear();
+
+                await transaction.RollbackAsync(
+                    cancellationToken);
+
+                // The whole insert was rolled back: every new row is missed.
+                var detail = DescribeSaveFailure(ex);
+
+                foreach (var row in masterActivityLogs)
+                {
+                    result.AddMissed(
+                        sourceOf[row],
+                        ActivityMissReason.SaveFailed,
+                        row.EmployeeCode,
+                        detail);
+                }
+
+                return result;
+            }
+
+            /*
+             * Verify the save: every row that should now exist (inserted or
+             * already stored) is read back by key. If any is missing, roll
+             * back and report it, so the file is not marked processed.
+             */
+
+            var savedKeys =
+                (await _dbContext.MasterActivityLog
+                    .AsNoTracking()
+                    .Where(x =>
+                        employeeCodes.Contains(x.EmployeeCode) &&
+                        x.StartTime >= windowStart)
+                    .Select(x => new
+                    {
+                        x.EmployeeCode,
+                        x.StartTime,
+                        x.EndTime,
+                        x.DurationSeconds
+                    })
+                    .ToListAsync(cancellationToken))
+                .Select(x => ActivityKey(
+                    x.EmployeeCode,
+                    x.StartTime,
+                    x.EndTime,
+                    x.DurationSeconds))
+                .ToHashSet();
+
+            var notFound =
+                masterActivityLogs
+                    .Where(x => !savedKeys.Contains(
+                        ActivityKey(
+                            x.EmployeeCode,
+                            x.StartTime,
+                            x.EndTime,
+                            x.DurationSeconds)))
+                    .ToHashSet(ReferenceEqualityComparer.Instance);
+
+            if (notFound.Any())
+            {
+                _dbContext.ChangeTracker.Clear();
+
+                await transaction.RollbackAsync(
+                    cancellationToken);
+
+                // Rolled back, so none of this file's new rows are stored.
+                foreach (var row in masterActivityLogs)
+                {
+                    result.AddMissed(
+                        sourceOf[row],
+                        notFound.Contains(row)
+                            ? ActivityMissReason.NotFoundAfterSave
+                            : ActivityMissReason.SaveFailed,
+                        row.EmployeeCode,
+                        notFound.Contains(row)
+                            ? "Row not found after SaveChanges"
+                            : $"Rolled back because {notFound.Count} row(s) of the file were not found after SaveChanges");
+                }
+
+                return result;
+            }
+
+            result.Inserted = masterActivityLogs.Count;
+
+            var modifiedAt = (DateTime?)DateTime.UtcNow;
+
+            foreach (var update in storedUpdates.GroupBy(x => x.LogDate))
+            {
+                var logDate = update.Key;
+
+                var ids =
+                    update
+                        .Select(x => x.Id)
+                        .ToList();
+
+                await _dbContext.MasterActivityLog
+                    .Where(x => ids.Contains(x.MasterActivityLogId))
+                    .ExecuteUpdateAsync(
+                        s => s
+                            .SetProperty(x => x.LogDate, logDate)
+                            .SetProperty(x => x.ModifiedAt, modifiedAt),
+                        cancellationToken);
+            }
+
+            await transaction.CommitAsync(
+                cancellationToken);
+
+            var logLevel =
+                storedUpdates.Count > 0 || veryLateEmployees > 0 || anomalies > 0
+                    ? LogLevel.Information
+                    : LogLevel.Debug;
+
+            _logger.Log(
+                logLevel,
+                "Shift dates resolved. Inserted={Inserted}, StoredRowsReassigned={Reassigned}, NewShifts={NewShifts}, CrossDateAssignments={CrossDate}, LateEmployees={Late}, VeryLateEmployees={VeryLate}, Anomalies={Anomalies}",
+                masterActivityLogs.Count,
+                storedUpdates.Count,
+                newShifts,
+                crossDate,
+                lateEmployees,
+                veryLateEmployees,
+                anomalies);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Records an attempt that missed activity records: writes the missed
+        /// records and reasons to processing/missed/&lt;file&gt; and logs them.
+        /// Returns true when the retry limit is reached (the file is parked).
+        /// </summary>
+        private async Task<bool> TrackMissedActivitiesAsync(
+            string file,
+            ActivityFileProcessingResult result,
+            CancellationToken cancellationToken)
+        {
+            var previous =
+                await _dataLakeService
+                    .ReadMissedActivityFileAsync(
+                        file,
+                        cancellationToken);
+
+            var missedFile =
+                MissedRecordPolicy.NextAttempt(
+                    file,
+                    previous,
+                    result,
+                    DateTime.UtcNow,
+                    _missedRecordOptions.MaxAttempts);
+
+            await _dataLakeService
+                .SaveMissedActivityFileAsync(
+                    missedFile,
+                    cancellationToken);
+
+            if (missedFile.Parked)
+            {
+                _logger.LogError(
+                    "Activity file {File} parked after {Attempts} attempts: {Missed} of {Total} records could not be saved and are kept in processing/missed for replay. Reasons: {Reasons}. Samples: {Samples}",
+                    file,
+                    missedFile.Attempts,
+                    result.Missed.Count,
+                    result.Total,
+                    result.ReasonSummary(),
+                    result.SampleSummary());
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "Activity file {File} not marked processed (attempt {Attempt} of {MaxAttempts}): {Missed} of {Total} records missed, {Inserted} inserted, {AlreadyExists} already stored. Reasons: {Reasons}. Samples: {Samples}",
+                    file,
+                    missedFile.Attempts,
+                    _missedRecordOptions.MaxAttempts,
+                    result.Missed.Count,
+                    result.Total,
+                    result.Inserted,
+                    result.AlreadyExists,
+                    result.ReasonSummary(),
+                    result.SampleSummary());
+            }
+
+            return missedFile.Parked;
+        }
+
+        /// <summary>
+        /// Short reason for a failed SaveChanges, including the SQL error
+        /// number (e.g. 2601/2627 duplicate key, 2628 truncation, 515 NULL).
+        /// </summary>
+        private static string DescribeSaveFailure(DbUpdateException ex) =>
+            ex.GetBaseException() is SqlException sqlException
+                ? $"SaveChanges failed: SQL error {sqlException.Number}: {sqlException.Message}"
+                : $"SaveChanges failed: {ex.GetBaseException().Message}";
+
+        /// <summary>
+        /// Takes an exclusive, transaction-owned application lock for one
+        /// employee's Shift Date calculation (released on commit/rollback).
+        /// </summary>
+        private Task AcquireShiftDateLockAsync(
+            string employeeCode,
+            CancellationToken cancellationToken)
+        {
+            var resource = $"shiftdate:{employeeCode.ToUpperInvariant()}";
+
+            return _dbContext.Database.ExecuteSqlAsync(
+                $"""
+                DECLARE @result int;
+                EXEC @result = sp_getapplock @Resource = {resource}, @LockMode = 'Exclusive', @LockOwner = 'Transaction', @LockTimeout = 60000;
+                IF @result < 0 THROW 51000, 'Could not acquire the shift-date lock.', 1;
+                """,
+                cancellationToken);
+        }
+
+        /// <summary>
+        /// Natural key of an activity row (matches UX_MasterActivityLog_Dedup).
+        /// </summary>
+        private static (string EmployeeCode, long StartTicks, long EndTicks, int DurationSeconds) ActivityKey(
+            string employeeCode,
+            DateTime startTime,
+            DateTime endTime,
+            int durationSeconds) =>
+            (employeeCode.ToUpperInvariant(), startTime.Ticks, endTime.Ticks, durationSeconds);
+
+        /// <summary>
+        /// Returns matched category
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <param name="categories"></param>
+        /// <returns></returns>
+
+        private MasterActivityCategory? ResolveMasterActivity(ActivityRawRecord activity, List<MasterActivityCategory> categories)
+        {
+            var rules =
+                categories
+                    .SelectMany(
+                        category =>
+                            category.MasterActivityCategoryRules
+                             .Where(rule => rule.IsActive && !rule.IsDelete)
+                                .Select(rule => new
+                                {
+                                    Category = category,
+                                    Rule = rule
+                                }))
+                    .OrderByDescending(
+                        x => x.Rule.Priority)
+                    .ToList();
+
+            foreach (var item in rules)
+            {
+                var sourceValue =
+                    GetMatchSource(
+                        activity,
+                        item.Rule.MatchType);
+
+                if (string.IsNullOrWhiteSpace(
+                        sourceValue))
+                {
+                    continue;
+                }
+
+                if (IsMatch(
+                        sourceValue,
+                        item.Rule))
+                {
+                    return item.Category;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get matched rule
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <param name="matchType"></param>
+        /// <returns></returns>
+        private string? GetMatchSource(ActivityRawRecord activity, ActivityMatchType matchType)
+        {
+            return matchType switch
+            {
+                ActivityMatchType.ProcessName =>
+                    activity.ProcessName,
+
+                ActivityMatchType.WindowTitle =>
+                    activity.WindowTitle,
+
+                ActivityMatchType.Domain =>
+                    activity.Domain,
+
+                ActivityMatchType.Url =>
+                    activity.Url,
+
+                ActivityMatchType.ExecutablePath =>
+                    activity.ExecutablePath,
+
+                ActivityMatchType.SubActivity =>
+                    activity.SubActivity,
+
+                _ => null
+            };
+        }
+
+        /// <summary>
+        /// Checks whether matches with source value or not
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        private bool IsMatch(string source, MasterActivityCategoryRule rule)
+        {
+            if (string.IsNullOrWhiteSpace(
+                    source))
+            {
+                return false;
+            }
+
+            if (rule.IsRegex)
+            {
+                return Regex.IsMatch(
+                    source,
+                    rule.MatchValue,
+                    rule.IsCaseSensitive
+                        ? RegexOptions.None
+                        : RegexOptions.IgnoreCase);
+            }
+
+            var comparison =
+                rule.IsCaseSensitive
+                    ? StringComparison.Ordinal
+                    : StringComparison.OrdinalIgnoreCase;
+
+            return source.Contains(
+                rule.MatchValue,
+                comparison);
+        }
+
+        /// <summary>
+        /// Get the matched activity type
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        private string ResolveActivityType(MasterActivityCategory? category)
+        {
+            if (category == null)
+            {
+                return ActivityCategoryTypes.NonProductive;
+            }
+
+            if (category.IsProductive)
+            {
+                return ActivityCategoryTypes.Productive;
+            }
+
+            if (category.IsNonProductive)
+            {
+                return ActivityCategoryTypes.NonProductive;
+            }
+
+            if (category.IsNoImpact)
+            {
+                return ActivityCategoryTypes.NoImpact;
+            }
+
+            return ActivityCategoryTypes.NonProductive;
+        }
+
+        /// <summary>
+        /// Sync System Info data to DB
+        /// </summary>
+        /// <param name="systemInfos"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <summary>
+        /// Sync System Info data to DB
+        /// </summary>
+        /// <param name="systemInfos"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task SyncSystemInfosAsync(
+     List<SystemInfoRawRecord> systemInfos,
+     CancellationToken cancellationToken)
+        {
+            if (!systemInfos.Any())
+                return;
+
+            await _systemInfoSyncLock.WaitAsync(cancellationToken);
+
+            try
+            {
+                var existingSystems =
+                    await _dbContext.MasterEmployeeSystemInfo
+                        .ToListAsync(cancellationToken);
+
+                var existingLookup =
+                    existingSystems
+                        .GroupBy(
+                            x => $"{x.UserName?.Trim()}|{x.SystemName?.Trim()}",
+                            StringComparer.OrdinalIgnoreCase)
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.First(),
+                            StringComparer.OrdinalIgnoreCase);
+
+                /*
+                 * Was previously one sp_GetEmployeesDetailsByNTID call PER
+                 * systemInfo record (an N+1 round trip - 100+ calls per
+                 * run at your current scale). Resolve every NTID in this
+                 * batch with a single call instead.
+                 */
+
+                var employeesByNtid =
+                    await _employeeActivityLogSummaryService
+                        .GetEmployeeDetailsByNTIDsAsync(
+                            systemInfos.Select(x => x.UserName));
+
+                foreach (var systemInfo in systemInfos)
+                {
+                    if (string.IsNullOrWhiteSpace(systemInfo.UserName) ||
+                        !employeesByNtid.TryGetValue(
+                            systemInfo.UserName,
+                            out var employee))
+                    {
+                        continue;
+                    }
+
+                    var userName = systemInfo.UserName?.Trim();
+                    var systemName = systemInfo.SystemName?.Trim();
+
+                    var systemKey = $"{userName}|{systemName}";
+
+                    if (existingLookup.TryGetValue(
+                            systemKey,
+                            out var existing))
+                    {
+                        existing.EmployeeCode = employee.EmployeeCode;
+                        existing.EmpName = systemInfo.EmpName;
+                        existing.Email = systemInfo.Email;
+                        existing.SystemName = systemName;
+                        existing.Manufacturer = systemInfo.Manufacturer;
+                        existing.Model = systemInfo.Model;
+                        existing.OS = systemInfo.OS;
+                        existing.SerialNumber = systemInfo.SerialNumber;
+                        existing.MachineName = systemInfo.MachineName;
+                        existing.LogDate = systemInfo.LogDate;
+                        existing.ModifiedAt = DateTime.UtcNow;
+
+                        continue;
+                    }
+
+                    var entity = new MasterEmployeeSystemInfo
+                    {
+                        EmployeeCode = employee.EmployeeCode,
+                        UserName = userName,
+                        EmpName = systemInfo.EmpName,
+                        Email = systemInfo.Email,
+                        SystemName = systemName,
+                        Manufacturer = systemInfo.Manufacturer,
+                        Model = systemInfo.Model,
+                        OS = systemInfo.OS,
+                        SerialNumber = systemInfo.SerialNumber,
+                        MachineName = systemInfo.MachineName,
+                        LogDate = systemInfo.LogDate,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _dbContext.MasterEmployeeSystemInfo.Add(entity);
+
+                    // Prevent duplicate records within this execution
+                    existingLookup[systemKey] = entity;
+                }
+
+                await _dbContext.SaveChangesAsync(cancellationToken);
+            }
+            finally
+            {
+                _systemInfoSyncLock.Release();
+            }
+        }
+
+        /// <summary>
+        /// Record entry to summary table.
+        ///
+        /// One summary per employee per Shift Date (MasterActivityLog.LogDate).
+        /// Activities are not split: an overnight shift counts in full under
+        /// the date it started on.
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateProductivitySummaryAsync()
+        {
+            var today =
+                _shiftDateResolver.LocalDate(DateTime.UtcNow);
+
+            /*
+             * Recompute the last few shift dates, not only today: a shift
+             * dated yesterday can still be receiving activities, and late
+             * events can move activities between recent shift dates.
+             */
+
+            var fromDate =
+                today.AddDays(
+                    -(Math.Max(1, _shiftDateOptions.SummaryRecomputeDays) - 1));
+
+            var activities = await _dbContext.MasterActivityLog
+                .AsNoTracking()
+                .Include(x => x.MasterActivityCategory)   // needed for unknownSeconds
+                .Where(x => x.LogDate >= fromDate && x.LogDate <= today)
+                .ToListAsync();
+
+            if (!activities.Any())
+            {
+                return;
+            }
+
+            /*
+             * Remove duplicate cumulative records on the RAW rows.
+             *
+             * For the same Employee + StartTime + Status keep the record
+             * having the highest duration.
+             */
+
+            var dedupedActivities = activities
+                .GroupBy(x => new
+                {
+                    x.EmployeeCode,
+                    x.StartTime,
+                    x.Status
+                })
+                .Select(g => g
+                    .OrderByDescending(x => x.DurationSeconds)
+                    .ThenByDescending(x => x.MasterActivityLogId)
+                    .First())
+                .Where(x => x.DurationSeconds > 0)
+                .ToList();
+
+            /*
+             * Group by Employee + Shift Date.
+             */
+
+            var employeeDayGroups = dedupedActivities
+                .GroupBy(x => new
+                {
+                    x.EmployeeCode,
+                    x.LogDate
+                })
+                .ToList();
+
+            /*
+             * Get all active MasterShift records.
+             */
+
+            var masterShifts = await _dbContext.MasterShift
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .ToListAsync();
+
+            /*
+             * Employee codes so existing summaries in the window can be
+             * fetched in one query. Taken from all activities, so a summary
+             * whose activities were all removed by de-duplication or moved
+             * to another Shift Date is still found (and zeroed below).
+             */
+
+            var employeeCodes = activities
+                .Select(x => x.EmployeeCode)
+                .Distinct()
+                .ToList();
+
+            /*
+             * Lookup values used when creating a summary.
+             */
+
+            string[] keys =
+            {
+        WorkVistaConstants.LookupConstants.DayType,
+        WorkVistaConstants.LookupConstants.AttendanceStatus,
+        WorkVistaConstants.LookupConstants.ShiftName,
+        WorkVistaConstants.LookupConstants.NoOfDays
+    };
+
+            var lookups =
+                (await _dictionaryService.GetByNamesAsync(keys))
+                    .ToDictionary(x => x.Key, x => x.Value);
+
+            /*
+             * IMPORTANT:
+             *
+             * Only the summary read/update/insert portion is transactional.
+             * The expensive activity processing above is intentionally
+             * outside the transaction to reduce lock duration and
+             * deadlock probability.
+             */
+
+            await using var transaction =
+                await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                /*
+                 * The unique index on EmployeeCode + LoggedDate remains the
+                 * final database-level protection against duplicate summaries.
+                 */
+
+                var existingSummaries =
+                    await _dbContext.EmployeeActivityLogSummary
+                        .Where(x =>
+                            employeeCodes.Contains(x.EmployeeCode) &&
+                            x.LoggedDate >= fromDate &&
+                            x.LoggedDate <= today)
+                        .ToListAsync();
+
+                var existingSummaryDictionary =
+                    existingSummaries.ToDictionary(
+                        x => $"{x.EmployeeCode}_{x.LoggedDate}",
+                        x => x);
+
+                var summarizedKeys =
+                    new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var employeeDayGroup in employeeDayGroups)
+                {
+                    var employeeCode = employeeDayGroup.Key.EmployeeCode;
+                    var loggedDate = employeeDayGroup.Key.LogDate;
+
+                    /*
+                     * TOTALS, FIRST LOGIN / LAST LOGOUT (full activities, IST)
+                     */
+
+                    var totals =
+                        DaySummaryCalculator.Calculate(
+                            employeeDayGroup.ToList(),
+                            _shiftDateResolver.TimeZone);
+
+                    if (totals == null)
+                    {
+                        continue;
+                    }
+
+                    /*
+                     * EXISTING SUMMARY
+                     */
+
+                    var existingSummaryKey = $"{employeeCode}_{loggedDate}";
+
+                    summarizedKeys.Add(existingSummaryKey);
+
+                    existingSummaryDictionary.TryGetValue(
+                        existingSummaryKey,
+                        out var employeeSummary);
+
+                    /*
+                     * DETERMINE SHIFT
+                     *
+                     * Shift is assigned only when the summary is first created
+                     * (or has no shift yet), from the time of day of the first
+                     * activity of the Shift Date.
+                     */
+
+                    MasterShift? selectedShift = null;
+
+                    if (employeeSummary == null ||
+                        employeeSummary.MasterShiftId == null)
+                    {
+                        selectedShift =
+                            GetShiftForFirstLogin(
+                                totals.FirstLogin.TimeOfDay,
+                                masterShifts);
+                    }
+
+                    /*
+                     * CREATE SUMMARY IF IT DOESN'T EXIST
+                     */
+
+                    if (employeeSummary == null)
+                    {
+                        employeeSummary =
+                            new EmployeeActivityLogSummary
+                            {
+                                EmployeeCode = employeeCode,
+                                LoggedDate = loggedDate,
+
+                                DAYTYPE =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.DayType),
+
+                                AttendanceStatus =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.AttendanceStatus),
+
+                                SHIFTNAME =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.ShiftName),
+
+                                NOOFDAYS =
+                                    lookups.GetValueOrDefault(
+                                        WorkVistaConstants.LookupConstants.NoOfDays),
+
+                                CreatedAt = DateTime.UtcNow,
+
+                                IsActive = true,
+                                IsDelete = false,
+                                IsValidated = true
+                            };
+
+                        _dbContext.EmployeeActivityLogSummary.Add(employeeSummary);
+
+                        existingSummaryDictionary.Add(
+                            existingSummaryKey,
+                            employeeSummary);
+                    }
+
+                    /*
+                     * Set shift whenever one was determined and the summary
+                     * has none yet (covers both new and existing-without-shift).
+                     */
+
+                    if (selectedShift != null &&
+                        employeeSummary.MasterShiftId == null)
+                    {
+                        employeeSummary.MasterShiftId = selectedShift.MasterShiftId;
+                        employeeSummary.SHIFTNAME = selectedShift.Name;
+                    }
+
+                    /*
+                     * FIRST LOGIN / LAST LOGOUT
+                     */
+
+                    employeeSummary.FIRSTLOGIN = totals.FirstLogin;
+                    employeeSummary.LASTLOGOUT = totals.LastLogout;
+
+                    /*
+                     * TOTAL CALCULATIONS
+                     */
+
+                    ApplyTotals(
+                        employeeSummary,
+                        totals);
+
+                    employeeSummary.IsValidated = true;
+
+                    /*
+                     * Update AC columns.
+                     */
+
+                    _employeeActivityLogSummaryService
+                        .UpdateACColumns(employeeSummary);
+                }
+
+                /*
+                 * A late event can move every activity of a Shift Date to
+                 * another date. Zero such summaries instead of leaving stale
+                 * totals behind.
+                 */
+
+                foreach (var staleSummary in existingSummaries.Where(x =>
+                             !summarizedKeys.Contains($"{x.EmployeeCode}_{x.LoggedDate}")))
+                {
+                    ApplyTotals(
+                        staleSummary,
+                        null);
+
+                    _employeeActivityLogSummaryService
+                        .UpdateACColumns(staleSummary);
+                }
+
+                /*
+                 * Save all newly created/updated summaries.
+                 */
+
+                await _dbContext.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Writes the calculated hours to a summary (all zero when totals is null).
+        /// </summary>
+        private static void ApplyTotals(
+            EmployeeActivityLogSummary summary,
+            DaySummaryTotals? totals)
+        {
+            var activeSeconds = totals?.ActiveSeconds ?? 0;
+            var idleSeconds = totals?.IdleSeconds ?? 0;
+
+            summary.TOT_LOGGEDHOURS =
+                Formatter.ConvertSecondsToDecimalHours(activeSeconds) + Formatter.ConvertSecondsToDecimalHours(idleSeconds);
+
+            summary.TOT_ACTIVEHOURS =
+                Formatter.ConvertSecondsToDecimalHours(activeSeconds);
+
+            summary.TOT_PRODHOURS =
+                Formatter.ConvertSecondsToDecimalHours(totals?.ProductiveSeconds ?? 0);
+
+            summary.TOT_NONPRODHOURS =
+                Formatter.ConvertSecondsToDecimalHours(totals?.NonProductiveSeconds ?? 0);
+
+            summary.TOT_TIMEONSYSTEM =
+                Formatter.ConvertSecondsToDecimalHours(activeSeconds);
+
+            summary.TOT_IDLETIME =
+                Formatter.ConvertSecondsToDecimalHours(idleSeconds);
+
+            summary.TOT_NOIMPACTHOURS =
+                Formatter.ConvertSecondsToDecimalHours(totals?.NoImpactSeconds ?? 0);
+
+            summary.TOT_UNKNOWNAPPLICATION =
+                Formatter.ConvertSecondsToDecimalHours(totals?.UnknownSeconds ?? 0);
+        }
+
+        private static MasterShift? GetShiftForFirstLogin(
+    TimeSpan firstLoginTime,
+    List<MasterShift> masterShifts)
+        {
+            var nwsStart = new TimeSpan(5, 30, 0);
+            var nwsEnd = new TimeSpan(7, 0, 0);
+
+            /*
+             * NWS: 05:30 <= Login < 07:00
+             */
+
+            if (firstLoginTime >= nwsStart &&
+                firstLoginTime < nwsEnd)
+            {
+                return masterShifts.FirstOrDefault(x =>
+                    string.Equals(
+                        x.Name,
+                        WorkVistaConstants.ShiftConstants.NWS,
+                        StringComparison.OrdinalIgnoreCase));
+            }
+
+            /*
+             * NORMAL SHIFTS, sorted by start time.
+             *
+             * Current Shift StartTime <= Login < Next Shift StartTime
+             */
+
+            var normalShifts = masterShifts
+                .Where(x =>
+                    !string.Equals(
+                        x.Name,
+                        WorkVistaConstants.ShiftConstants.NWS,
+                        StringComparison.OrdinalIgnoreCase))
+                .OrderBy(x => x.StartTime)
+                .ToList();
+
+            for (var i = 0; i < normalShifts.Count; i++)
+            {
+                var currentStart = normalShifts[i].StartTime.ToTimeSpan();
+
+                /*
+                 * For the last shift (Night Shift) the next boundary is 05:30
+                 * because Night Shift crosses midnight.
+                 */
+
+                var nextStart =
+                    i + 1 < normalShifts.Count
+                        ? normalShifts[i + 1].StartTime.ToTimeSpan()
+                        : nwsStart;
+
+                if (firstLoginTime >= currentStart &&
+                    firstLoginTime < nextStart)
+                {
+                    return normalShifts[i];
+                }
+            }
+
+            /*
+             * NIGHT SHIFT: a first login between 00:00 and 05:30 belongs to
+             * Night Shift.
+             */
+
+            return normalShifts.FirstOrDefault(x =>
+                string.Equals(
+                    x.Name,
+                    WorkVistaConstants.ShiftConstants.NightShift,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+    }
+}
+
+
+--CreateProductivitySummaryAsync
