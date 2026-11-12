@@ -1,0 +1,222 @@
+Validate the following scenarios based on these rules:
+
+Rule 1:
+Gap < 3 Hours
+    -> Same Shift
+
+Gap >= 3 Hours
+    -> New Shift
+
+Rule 2:
+Night Shift Carry Forward is applied only on the FIRST activity of a NEW shift.
+
+Rule 3:
+If first activity of a new shift occurs between 12:00 AM and 05:30 AM
+
+    Previous Day Summary Exists
+        -> Current Day
+
+    Previous Day Summary Does Not Exist
+        -> Previous Day
+
+Rule 4:
+Once a shift receives a LogDate, every activity belonging to that shift inherits the same LogDate.
+
+Scenarios:
+
+1.
+Monday
+No Login
+
+Tuesday
+01:00 AM - 08:00 AM
+
+Expected:
+Monday
+
+2.
+Monday
+10:00 AM - 08:00 PM
+
+Tuesday
+01:00 AM - 08:00 AM
+
+Expected:
+Tuesday
+
+3.
+Tuesday
+01:00 AM - 08:00 AM
+
+Wednesday
+01:00 AM - 08:00 AM
+
+Expected:
+Tuesday and Wednesday should remain separate business days.
+
+4.
+09-Nov
+08:20 PM - 04:31 AM
+
+Expected:
+Single shift
+LogDate = 09-Nov
+
+5.
+01:00 AM - 09:00 AM
+
+11:30 AM - 08:00 PM
+
+Gap = 2 Hours 30 Minutes
+
+Expected:
+Same shift
+
+6.
+01:00 AM - 08:00 AM
+
+12:00 PM - 08:00 PM
+
+Gap = 4 Hours
+
+Expected:
+Two separate shifts
+
+7.
+Monday
+No Login
+
+Tuesday
+01:00 AM - 08:00 AM
+
+12:00 PM - 08:00 PM
+
+Wednesday
+01:00 AM - 08:00 AM
+
+Expected:
+Shift 1 -> Monday
+Shift 2 -> Tuesday
+Shift 3 -> Wednesday
+
+8.
+Monday
+10:00 AM - 09:00 PM
+
+Tuesday
+12:30 AM - 05:00 AM
+
+Gap = 3 Hours 30 Minutes
+
+Expected:
+Monday Summary
+Tuesday Summary
+
+9.
+Monday
+10:00 AM - 08:00 PM
+
+11:30 PM - 04:00 AM
+
+Tuesday
+09:00 AM - 06:00 PM
+
+Expected:
+Monday Night Shift remains with Monday
+Tuesday Day Shift remains with Tuesday
+
+10.
+Monday
+10:00 AM - 08:00 PM
+
+11:30 PM - 04:00 AM
+
+Tuesday
+09:00 AM - 06:00 PM
+
+09:30 PM - 06:00 AM
+
+Expected:
+Monday:
+10:00 AM -> 04:00 AM
+
+Tuesday:
+09:00 AM -> 06:00 AM
+
+11.
+Tuesday
+09:30 PM - 12:00 AM
+
+12:02 AM - 03:00 AM
+
+Expected:
+Single Shift
+LogDate = Tuesday
+
+12.
+Tuesday
+09:30 PM - 03:00 AM
+
+Wednesday
+07:00 AM - 09:00 AM
+
+Gap = 4 Hours
+
+Expected:
+Tuesday Shift
+Wednesday Shift
+
+13.
+Gap Exactly 3 Hours
+
+01:00 AM - 08:00 AM
+
+11:00 AM - 08:00 PM
+
+Expected:
+New Shift
+(Because code uses Gap >= 3 Hours)
+
+14.
+Gap 2 Hours 59 Minutes
+
+01:00 AM - 08:00 AM
+
+10:59 AM - 08:00 PM
+
+Expected:
+Same Shift
+
+15.
+Employee works:
+18:40 PM -> 04:33 AM
+
+Expected:
+FIRSTLOGIN = 18:40 PM
+LASTLOGOUT = 04:33 AM
+Single Business Day
+
+16.
+Employee works:
+19:43 PM -> 04:19 AM
+
+Expected:
+FIRSTLOGIN = 19:43 PM
+LASTLOGOUT = 04:19 AM
+Single Business Day
+
+17.
+Employee works:
+10:00 AM -> 12:30 AM
+
+Expected:
+FIRSTLOGIN = 10:00 AM
+LASTLOGOUT = 12:30 AM
+No night-shift adjustment required
+
+18.
+Employee starts at 04:00 AM and ends before midnight
+
+Expected:
+FIRSTLOGIN remains 04:00 AM
+No evening-login override.
