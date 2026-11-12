@@ -1,0 +1,45 @@
+foreach (var employeeRows in masterActivityLogs.GroupBy(
+             x => x.EmployeeCode,
+             StringComparer.OrdinalIgnoreCase))
+{
+    var rows = employeeRows.ToList();
+
+    var plan =
+        _shiftDatePlanner.Plan(
+            storedByEmployee[employeeRows.Key]
+                .Select(x => new StoredShiftActivity(
+                    x.MasterActivityLogId,
+                    x.StartTime,
+                    x.EndTime,
+                    x.Status == ActivityCategoryTypes.Idle,
+                    x.LogDate))
+                .ToList(),
+            rows
+                .Select(x => new ShiftActivity(
+                    x.StartTime,
+                    x.EndTime,
+                    x.Status == ActivityCategoryTypes.Idle))
+                .ToList());
+
+    // Shift dates come only from the planner/resolver. Nothing here
+    // changes them afterwards, so every row of a shift keeps one date.
+    for (var i = 0; i < rows.Count; i++)
+    {
+        rows[i].LogDate = plan.NewShiftDates[i];
+    }
+
+    storedUpdates.AddRange(plan.StoredUpdates);
+
+    newShifts += plan.NewShifts;
+    crossDate += plan.CrossDateAssignments;
+    anomalies += plan.Anomalies;
+
+    if (plan.Path == ShiftPlanPath.Late)
+    {
+        lateEmployees++;
+    }
+    else if (plan.Path == ShiftPlanPath.VeryLate)
+    {
+        veryLateEmployees++;
+    }
+}
