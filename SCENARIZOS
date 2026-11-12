@@ -1,0 +1,39 @@
+Scenario 1: Monday - No Login | Tuesday - 01:00 AM to 08:00 AM | Expected: LogDate = Monday (No previous day summary exists)
+
+Scenario 2: Monday - 10:00 AM to 08:00 PM | Tuesday - 01:00 AM to 08:00 AM | Expected: LogDate = Tuesday (Previous day summary exists)
+
+Scenario 3: Tuesday - 01:00 AM to 08:00 AM | Wednesday - 01:00 AM to 08:00 AM | Expected: Tuesday Shift → Tuesday, Wednesday Shift → Wednesday
+
+Scenario 4: 09-Nov - 08:20 PM to 04:31 AM | Expected: Single Shift, LogDate = 09-Nov, FIRSTLOGIN = 08:20 PM, LASTLOGOUT = 04:31 AM
+
+Scenario 5: 01:00 AM to 09:00 AM, 11:30 AM to 08:00 PM | Gap = 2 Hours 30 Minutes | Expected: Same Shift, Same LogDate
+
+Scenario 6: 01:00 AM to 08:00 AM, 12:00 PM to 08:00 PM | Gap = 4 Hours | Expected: Two Separate Shifts
+
+Scenario 7: Monday - No Login | Tuesday - 01:00 AM to 08:00 AM, 12:00 PM to 08:00 PM | Wednesday - 01:00 AM to 08:00 AM | Expected: Shift 1 → Monday, Shift 2 → Tuesday, Shift 3 → Wednesday
+
+Scenario 8: Monday - 10:00 AM to 09:00 PM | Tuesday - 12:30 AM to 05:00 AM | Gap = 3 Hours 30 Minutes | Expected: Monday Summary and Tuesday Summary
+
+Scenario 9: Monday - 10:00 AM to 08:00 PM, 11:30 PM to 04:00 AM | Tuesday - 09:00 AM to 06:00 PM | Expected: Monday Day Shift + Monday Night Shift, Tuesday Day Shift
+
+Scenario 10: Monday - 10:00 AM to 08:00 PM, 11:30 PM to 04:00 AM | Tuesday - 09:00 AM to 06:00 PM, 09:30 PM to 06:00 AM | Expected: Monday Summary FIRSTLOGIN = 10:00 AM, LASTLOGOUT = 04:00 AM | Tuesday Summary FIRSTLOGIN = 09:00 AM, LASTLOGOUT = 06:00 AM
+
+Scenario 11: Tuesday - 09:30 PM to 12:00 AM, 12:02 AM to 03:00 AM | Gap = 2 Minutes | Expected: Same Shift, LogDate = Tuesday, FIRSTLOGIN = 09:30 PM, LASTLOGOUT = 03:00 AM
+
+Scenario 12: Tuesday - 09:30 PM to 03:00 AM | Wednesday - 07:00 AM to 09:00 AM | Gap = 4 Hours | Expected: Tuesday Shift and Wednesday Shift
+
+Scenario 13: 01:00 AM to 08:00 AM, 11:00 AM to 08:00 PM | Gap = Exactly 3 Hours | Expected: New Shift (Gap >= 3 Hours)
+
+Scenario 14: 01:00 AM to 08:00 AM, 10:59 AM to 08:00 PM | Gap = 2 Hours 59 Minutes | Expected: Same Shift
+
+Scenario 15: Monday - 10:00 AM to 09:00 PM | Tuesday - 12:30 AM to 05:00 AM | Wednesday - 12:30 AM to 05:00 AM | Expected: Tuesday Shift → Tuesday, Wednesday Shift → Wednesday, No merging of consecutive night shifts
+
+Scenario 16: Monday - No Login | Tuesday - 01:00 AM to 09:00 AM, 11:30 AM to 12:00 PM, 12:00 PM to 02:45 PM Idle, 02:45 PM to 03:00 PM Active, 03:00 PM to 05:45 PM Idle, 05:45 PM to 08:00 PM Active, 08:00 PM to 10:00 PM Idle, 10:00 PM to 08:00 AM Active | Expected: Entire chain belongs to Monday because all gaps are < 3 Hours
+
+Scenario 17: Employee works from 06:40 PM to 04:33 AM | Expected: FIRSTLOGIN = 06:40 PM, LASTLOGOUT = 04:33 AM, Single Business Day
+
+Scenario 18: Employee works from 07:43 PM to 04:19 AM | Expected: FIRSTLOGIN = 07:43 PM, LASTLOGOUT = 04:19 AM, Single Business Day
+
+Scenario 19: Employee works from 10:00 AM to 12:30 AM | Expected: FIRSTLOGIN = 10:00 AM, LASTLOGOUT = 12:30 AM, No Night Shift carry-forward adjustment
+
+Scenario 20 (Original Bug): 09-Nov - 08:20 PM to 12:02 AM | 10-Nov - 12:02 AM to 04:31 AM | Wrong: Split into two business dates | Expected: Single Shift, LogDate = 09-Nov, FIRSTLOGIN = 08:20 PM, LASTLOGOUT = 04:31 AM because carry-forward should be evaluated once per shift, not per activity after midnight.
