@@ -1,0 +1,123 @@
+namespace WorkVista.Processor.ShiftDate
+{
+    /// <summary>
+    /// Assigns Shift Dates to one employee's activities.
+    ///
+    /// Rules (Docs/Shift and Logged Hours Calculation.docx):
+    ///  - an activity keeps the date it started on, even across midnight (never split);
+    ///  - an activity on the same calendar date as the current shift date stays in it,
+    ///    whatever the gap;
+    ///  - on a different calendar date, a gap below BreakThreshold continues the
+    ///    current shift, a gap of BreakThreshold or more starts a new shift;
+    ///  - idle activities get a shift date but do not extend continuity.
+    ///
+    /// Calendar dates use the configured time zone; gaps use UTC instants.
+    /// Pure: no I/O, no clock.
+    /// </summary>
+    public sealed class ShiftDateResolver
+    {
+        private readonly TimeSpan _breakThreshold;
+        private readonly TimeZoneInfo _timeZone;
+
+        public ShiftDateResolver(
+            TimeSpan breakThreshold,
+            TimeZoneInfo timeZone)
+        {
+            _breakThreshold = breakThreshold;
+            _timeZone = timeZone;
+        }
+
+        public TimeZoneInfo TimeZone => _timeZone;
+
+        /// <summary>
+        /// Calendar date of a UTC instant in the configured time zone.
+        /// </summary>
+        public DateOnly LocalDate(DateTime utc) =>
+            DateOnly.FromDateTime(
+                TimeZoneInfo.ConvertTimeFromUtc(
+                    DateTime.SpecifyKind(utc, DateTimeKind.Utc),
+                    _timeZone));
+
+        /// <summary>
+        /// Resolves shift dates, continuing from <paramref name="seed"/>.
+        /// The input may be in any order; results are returned in input order.
+        /// </summary>
+        public ShiftResolution Resolve(
+            ShiftState? seed,
+            IReadOnlyList<ShiftActivity> activities)
+        {
+            var dates = new DateOnly[activities.Count];
+            var state = seed;
+            var newShifts = 0;
+            var crossDate = 0;
+            var anomalies = 0;
+
+            var order = Enumerable.Range(0, activities.Count)
+                .OrderBy(i => activities[i].StartUtc)
+                .ThenBy(i => EffectiveEnd(activities[i]))
+                .ThenBy(i => i);
+
+            foreach (var i in order)
+            {
+                var activity = activities[i];
+                var startDate = LocalDate(activity.StartUtc);
+                var end = EffectiveEnd(activity);
+
+                if (state is null ||
+                    StartsNewShift(state, activity.StartUtc, startDate, ref anomalies))
+                {
+                    state = new ShiftState(
+                        startDate,
+                        activity.IsIdle ? activity.StartUtc : end);
+
+                    newShifts++;
+                }
+                else if (!activity.IsIdle && end > state.LastActiveEndUtc)
+                {
+                    state = state with { LastActiveEndUtc = end };
+                }
+
+                dates[i] = state.ShiftDate;
+
+                if (state.ShiftDate != startDate)
+                {
+                    crossDate++;
+                }
+            }
+
+            return new ShiftResolution(
+                dates,
+                state,
+                newShifts,
+                crossDate,
+                anomalies);
+        }
+
+        private bool StartsNewShift(
+            ShiftState state,
+            DateTime startUtc,
+            DateOnly startDate,
+            ref int anomalies)
+        {
+            if (startDate == state.ShiftDate)
+            {
+                return false;
+            }
+
+            if (startDate < state.ShiftDate)
+            {
+                // Only reachable when the seed is later than the activity.
+                // Never assign a shift date after the activity's own date.
+                anomalies++;
+                return true;
+            }
+
+            return startUtc - state.LastActiveEndUtc >= _breakThreshold;
+        }
+
+        private static DateTime EffectiveEnd(ShiftActivity activity) =>
+            activity.EndUtc < activity.StartUtc
+                ? activity.StartUtc
+                : activity.EndUtc;
+    }
+}
