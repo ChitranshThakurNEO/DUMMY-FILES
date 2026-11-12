@@ -220,3 +220,111 @@ Employee starts at 04:00 AM and ends before midnight
 Expected:
 FIRSTLOGIN remains 04:00 AM
 No evening-login override.
+
++=====================================================================================================================
+
+Root Cause Investigation Prompt
+
+We identified an issue in the Night Shift Carry Forward implementation.
+
+Current Logic:
+1. Gap < 3 Hours
+      -> Same Shift
+
+2. Gap >= 3 Hours
+      -> New Shift
+
+3. Night Shift Carry Forward is applied for activities between 12:00 AM and 05:30 AM.
+
+Issue Observed:
+The carry-forward logic was being evaluated at the activity level instead of the shift level.
+
+Example:
+
+11-Nov
+18:40 PM → 04:33 AM
+
+Expected:
+LogDate = 11-Nov for the entire shift
+
+Actual:
+11-Nov
+18:40 PM → 00:16 AM
+
+12-Nov
+00:03 AM → 04:33 AM
+
+Reason:
+Post-midnight activities were re-evaluated independently and assigned a new business date, causing a continuous night shift to split into two days.
+
+Fix Applied:
+1. Shift continuity is determined first using the existing 3-hour break rule.
+2. Activities are grouped into shifts.
+3. Night Shift Carry Forward is evaluated only once using the first activity of the shift.
+4. The resulting LogDate is applied to all activities belonging to that shift.
+
+Validation Scenarios:
+
+Scenario 1
+Monday: No Login
+Tuesday: 01:00 AM - 08:00 AM
+Expected: Monday
+
+Scenario 2
+Monday: 10:00 AM - 08:00 PM
+Tuesday: 01:00 AM - 08:00 AM
+Expected: Tuesday
+
+Scenario 3
+Tuesday: 01:00 AM - 08:00 AM
+Wednesday: 01:00 AM - 08:00 AM
+Expected:
+Tuesday Shift -> Tuesday
+Wednesday Shift -> Wednesday
+
+Scenario 4
+09-Nov: 20:20 PM - 04:31 AM
+Expected:
+Single Shift
+LogDate = 09-Nov
+
+Scenario 5
+01:00 AM - 09:00 AM
+11:30 AM - 08:00 PM
+Gap = 2 Hours 30 Minutes
+Expected:
+Same Shift
+
+Scenario 6
+01:00 AM - 08:00 AM
+12:00 PM - 08:00 PM
+Gap = 4 Hours
+Expected:
+Two Separate Shifts
+
+Scenario 7
+Monday: No Login
+Tuesday:
+01:00 AM - 08:00 AM
+12:00 PM - 08:00 PM
+Wednesday:
+01:00 AM - 08:00 AM
+Expected:
+Shift 1 -> Monday
+Shift 2 -> Tuesday
+Shift 3 -> Wednesday
+
+Scenario 8
+Monday:
+10:00 AM - 09:00 PM
+
+Tuesday:
+12:30 AM - 05:00 AM
+
+Gap = 3 Hours 30 Minutes
+
+Expected:
+Monday Summary
+Tuesday Summary
+
+Please validate whether the implemented fix satisfies all scenarios and does not break existing shift-date assignment logic.
