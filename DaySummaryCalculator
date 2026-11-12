@@ -1,0 +1,62 @@
+using WorkVista.Server.DataContext.Entities;
+using static WorkVista.Server.Common.Constants.WorkVistaConstants;
+
+namespace WorkVista.Processor.Summary
+{
+    /// <summary>
+    /// Totals for one employee and one Shift Date (LogDate).
+    /// First login / last logout are local (IST) wall-clock times.
+    /// </summary>
+    public sealed record DaySummaryTotals(
+        DateTime FirstLogin,
+        DateTime LastLogout,
+        long ActiveSeconds,
+        long ProductiveSeconds,
+        long NonProductiveSeconds,
+        long IdleSeconds,
+        long NoImpactSeconds,
+        long UnknownSeconds);
+
+    public static class DaySummaryCalculator
+    {
+        /// <summary>
+        /// Builds the totals for all activities of one employee that share a
+        /// LogDate. Activities are never split: an overnight activity counts in
+        /// full under its Shift Date. Breaks between activities are not counted.
+        /// </summary>
+        /// <param name="activities">De-duplicated activities with DurationSeconds &gt; 0.
+        /// MasterActivityCategory must be loaded for the unknown-application total.</param>
+        /// <param name="timeZone">Time zone for FirstLogin / LastLogout.</param>
+        public static DaySummaryTotals? Calculate(
+            IReadOnlyCollection<MasterActivityLog> activities,
+            TimeZoneInfo timeZone)
+        {
+            if (activities.Count == 0)
+            {
+                return null;
+            }
+
+            long Sum(Func<MasterActivityLog, bool> predicate) =>
+                activities
+                    .Where(predicate)
+                    .Sum(x => (long)x.DurationSeconds);
+
+            return new DaySummaryTotals(
+                FirstLogin: ToLocal(activities.Min(x => x.StartTime), timeZone),
+                LastLogout: ToLocal(activities.Max(x => x.EndTime), timeZone),
+                ActiveSeconds: Sum(x => x.Status != ActivityCategoryTypes.Idle),
+                ProductiveSeconds: Sum(x => x.Status == ActivityCategoryTypes.Productive),
+                NonProductiveSeconds: Sum(x => x.Status == ActivityCategoryTypes.NonProductive),
+                IdleSeconds: Sum(x => x.Status == ActivityCategoryTypes.Idle),
+                NoImpactSeconds: Sum(x => x.Status == ActivityCategoryTypes.NoImpact),
+                UnknownSeconds: Sum(x =>
+                    x.Status == ActivityCategoryTypes.NonProductive &&
+                    x.MasterActivityCategory?.CategoryName == ActivityCategoryTypes.Unknown));
+        }
+
+        private static DateTime ToLocal(DateTime utc, TimeZoneInfo timeZone) =>
+            TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.SpecifyKind(utc, DateTimeKind.Utc),
+                timeZone);
+    }
+}
